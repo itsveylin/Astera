@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { formatINR } from "@/lib/mock-data";
+import { formatMoney } from "@/lib/finance";
 import type { LucideIcon } from "lucide-react";
 
-function useCounter(target: number, duration = 1200) {
+function useCounter(target: number, duration = 1000) {
   const [v, setV] = useState(0);
   useEffect(() => {
     let raf = 0;
@@ -20,13 +20,13 @@ function useCounter(target: number, duration = 1200) {
 }
 
 export function StatCard({
-  label, value, delta, icon: Icon, accent = "primary", currency = true,
+  label, value, delta, icon: Icon, accent = "primary", currency = "INR",
 }: {
   label: string; value: number; delta?: number; icon: LucideIcon;
-  accent?: "primary" | "accent" | "success" | "warning"; currency?: boolean;
+  accent?: "primary" | "accent" | "success" | "warning"; currency?: string;
 }) {
   const v = useCounter(value);
-  const display = currency ? formatINR(Math.round(v)) : Math.round(v).toLocaleString();
+  const display = formatMoney(Math.round(v), currency);
   const accentBg =
     accent === "success" ? "bg-[var(--color-success)]/15 text-[var(--color-success)]" :
     accent === "warning" ? "bg-[var(--color-warning)]/15 text-[var(--color-warning)]" :

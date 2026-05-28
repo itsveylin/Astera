@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo } from "react";
 import { Topbar } from "@/components/Topbar";
-import { IncomeExpenseArea, CategoryBars, CategoryPie, GrowthLine, Heatmap } from "@/components/charts/Charts";
-import { monthlySpend, transactions, heatmapData, formatINR } from "@/lib/mock-data";
+import { IncomeExpenseArea, CategoryBars, CategoryPie, GrowthLine, WeeklyBars } from "@/components/charts/Charts";
+import { useTransactions, useProfile } from "@/hooks/useFinanceData";
+import { formatMoney } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Lumen" }] }),
@@ -10,62 +11,92 @@ export const Route = createFileRoute("/_app/analytics")({
 });
 
 function Analytics() {
-  const [range, setRange] = useState<"W" | "M" | "Q" | "H" | "Y">("M");
-  const byCat = transactions.filter(t => t.amount < 0).reduce<Record<string, number>>((a, t) => {
-    a[t.category] = (a[t.category] || 0) + Math.abs(t.amount); return a;
-  }, {});
-  const pieData = Object.entries(byCat).map(([name, value]) => ({ name, value }));
-  const growth = monthlySpend.map((m) => ({ month: m.month, value: m.savings }));
+  const { data: profile } = useProfile();
+  const { data: txns = [] } = useTransactions();
+  const currency = profile?.currency ?? "INR";
+
+  const monthly = useMemo(() => {
+    const arr: { month: string; income: number; expense: number; savings: number }[] = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = d.toLocaleDateString("en-US", { month: "short" });
+      const m = txns.filter((t) => {
+        const td = new Date(t.occurred_at);
+        return td.getFullYear() === d.getFullYear() && td.getMonth() === d.getMonth();
+      });
+      const inc = m.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+      const exp = m.filter((t) => t.amount < 0).reduce((s, t) => s - t.amount, 0);
+      arr.push({ month: label, income: inc, expense: exp, savings: inc - exp });
+    }
+    return arr;
+  }, [txns]);
+
+  const byCat = useMemo(() => {
+    const o: Record<string, number> = {};
+    txns.filter((t) => t.amount < 0).forEach((t) => { o[t.category] = (o[t.category] || 0) + Math.abs(t.amount); });
+    return Object.entries(o).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [txns]);
+
+  const growth = monthly.map((m) => ({ month: m.month, value: m.savings }));
+
+  const weekly = useMemo(() => {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const totals = [0, 0, 0, 0, 0, 0, 0];
+    const now = Date.now();
+    const wk = 7 * 24 * 3600 * 1000;
+    txns.forEach((t) => {
+      const d = new Date(t.occurred_at);
+      if (now - d.getTime() > wk * 4) return;
+      if (t.amount >= 0) return;
+      const dow = (d.getDay() + 6) % 7;
+      totals[dow] += Math.abs(t.amount);
+    });
+    return days.map((d, i) => ({ day: d, value: Math.round(totals[i] / 4) }));
+  }, [txns]);
+
+  const totalSaved = monthly.reduce((s, m) => s + m.savings, 0);
+
+  if (txns.length === 0) {
+    return (
+      <div>
+        <Topbar title="Analytics" subtitle="Insights appear as you log transactions." />
+        <div className="glass rounded-3xl p-12 text-center text-muted-foreground">No data yet — head to Transactions to add a few.</div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <Topbar title="Analytics" subtitle="Your spending, in cinematic detail." />
-      <div className="flex flex-wrap items-center gap-2 glass rounded-2xl p-1.5 w-fit mb-4">
-        {([["W","Weekly"],["M","Monthly"],["Q","Quarterly"],["H","Half-year"],["Y","Yearly"]] as const).map(([k, l]) => (
-          <button key={k} onClick={() => setRange(k)}
-            className={`px-4 py-1.5 rounded-xl text-xs ${range === k ? "gradient-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
-        ))}
-      </div>
+      <Topbar title="Analytics" subtitle="Your money story, calmly told." />
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="glass rounded-3xl p-6 lg:col-span-2">
-          <h3 className="font-display text-2xl mb-1">Income vs Expense trend</h3>
-          <p className="text-xs text-muted-foreground mb-4">Total saved {formatINR(monthlySpend.reduce((s, m) => s + m.savings, 0))}</p>
-          <IncomeExpenseArea data={monthlySpend} />
+          <h3 className="font-display text-2xl mb-1">Income vs Expense</h3>
+          <p className="text-xs text-muted-foreground mb-4">Total saved {formatMoney(totalSaved, currency)}</p>
+          <IncomeExpenseArea data={monthly} currency={currency} />
         </div>
         <div className="glass rounded-3xl p-6">
           <h3 className="font-display text-2xl mb-4">Category mix</h3>
-          <CategoryPie data={pieData} />
+          {byCat.length ? <CategoryPie data={byCat} currency={currency} /> : <p className="text-sm text-muted-foreground">No expenses.</p>}
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 mt-4">
         <div className="glass rounded-3xl p-6">
           <h3 className="font-display text-2xl mb-4">Savings growth</h3>
-          <GrowthLine data={growth} />
+          <GrowthLine data={growth} currency={currency} />
         </div>
         <div className="glass rounded-3xl p-6">
-          <h3 className="font-display text-2xl mb-4">Category comparison</h3>
-          <CategoryBars data={pieData.slice(0, 6)} />
+          <h3 className="font-display text-2xl mb-4">Weekly rhythm</h3>
+          <p className="text-xs text-muted-foreground -mt-2 mb-3">Average expense by weekday (last 4 weeks)</p>
+          <WeeklyBars data={weekly} currency={currency} />
         </div>
       </div>
 
       <div className="glass rounded-3xl p-6 mt-4">
-        <h3 className="font-display text-2xl mb-4">12-week spending heatmap</h3>
-        <Heatmap data={heatmapData} />
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-4 mt-4">
-        {[
-          { t: "Highest day", v: "Sat ₹6,240" },
-          { t: "Lowest day", v: "Tue ₹240" },
-          { t: "Avg / day", v: formatINR(124000 / 30) },
-        ].map((s, i) => (
-          <div key={i} className="glass rounded-3xl p-6">
-            <div className="text-xs text-muted-foreground">{s.t}</div>
-            <div className="font-display text-3xl mt-2">{s.v}</div>
-          </div>
-        ))}
+        <h3 className="font-display text-2xl mb-4">Top categories</h3>
+        <CategoryBars data={byCat.slice(0, 6)} currency={currency} />
       </div>
     </div>
   );
