@@ -21,14 +21,13 @@ export function useUpdateProfile() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (patch: Partial<Profile>) => {
-      const { error } = await supabase.from("profiles").update(patch).eq("id", user!.id);
+      const { error } = await supabase.from("profiles").update(patch as any).eq("id", user!.id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["profile"] }),
   });
 }
 
-// ----- Transactions -----
 export function useTransactions() {
   const { user } = useAuth();
   return useQuery({
@@ -49,10 +48,10 @@ export function useSaveTransaction() {
     mutationFn: async (t: Partial<Transaction> & { id?: string }) => {
       if (t.id) {
         const { id, ...rest } = t;
-        const { error } = await supabase.from("transactions").update(rest).eq("id", id);
+        const { error } = await supabase.from("transactions").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("transactions").insert({ ...t, user_id: user!.id });
+        const { error } = await supabase.from("transactions").insert({ ...(t as any), user_id: user!.id });
         if (error) throw error;
       }
     },
@@ -70,7 +69,6 @@ export function useDeleteTransaction() {
   });
 }
 
-// ----- Budgets -----
 export function useBudgets() {
   const { user } = useAuth();
   return useQuery({
@@ -89,12 +87,11 @@ export function useSaveBudget() {
     mutationFn: async (b: Partial<Budget> & { id?: string }) => {
       if (b.id) {
         const { id, ...rest } = b;
-        const { error } = await supabase.from("budgets").update(rest).eq("id", id);
+        const { error } = await supabase.from("budgets").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("budgets").upsert(
-          { ...b, user_id: user!.id }, { onConflict: "user_id,category" }
-        );
+        const { error } = await supabase.from("budgets")
+          .upsert({ ...(b as any), user_id: user!.id }, { onConflict: "user_id,category" });
         if (error) throw error;
       }
     },
@@ -112,7 +109,6 @@ export function useDeleteBudget() {
   });
 }
 
-// ----- Goals -----
 export function useGoals() {
   const { user } = useAuth();
   return useQuery({
@@ -131,10 +127,10 @@ export function useSaveGoal() {
     mutationFn: async (g: Partial<Goal> & { id?: string }) => {
       if (g.id) {
         const { id, ...rest } = g;
-        const { error } = await supabase.from("goals").update(rest).eq("id", id);
+        const { error } = await supabase.from("goals").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("goals").insert({ ...g, user_id: user!.id });
+        const { error } = await supabase.from("goals").insert({ ...(g as any), user_id: user!.id });
         if (error) throw error;
       }
     },
@@ -152,7 +148,6 @@ export function useDeleteGoal() {
   });
 }
 
-// ----- Investments -----
 export function useInvestments() {
   const { user } = useAuth();
   return useQuery({
@@ -171,10 +166,10 @@ export function useSaveInvestment() {
     mutationFn: async (i: Partial<Investment> & { id?: string }) => {
       if (i.id) {
         const { id, ...rest } = i;
-        const { error } = await supabase.from("investments").update(rest).eq("id", id);
+        const { error } = await supabase.from("investments").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("investments").insert({ ...i, user_id: user!.id });
+        const { error } = await supabase.from("investments").insert({ ...(i as any), user_id: user!.id });
         if (error) throw error;
       }
     },

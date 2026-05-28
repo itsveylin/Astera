@@ -1,12 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { Plus, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, X, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
-import { budgets, categoryMeta, formatINR } from "@/lib/mock-data";
+import { useBudgets, useSaveBudget, useDeleteBudget, useTransactions, useProfile } from "@/hooks/useFinanceData";
+import { CATEGORIES, categoryMeta, formatMoney, type Category, type Budget } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/budgets")({
   head: () => ({ meta: [{ title: "Budgets — Lumen" }] }),
-  component: Budgets,
+  component: BudgetsPage,
 });
 
 function statusColor(pct: number) {
@@ -15,62 +18,92 @@ function statusColor(pct: number) {
   return "var(--color-success)";
 }
 
-function Budgets() {
-  const total = budgets.reduce((s, b) => s + b.limit, 0);
-  const spent = budgets.reduce((s, b) => s + b.spent, 0);
-  const pct = Math.round((spent / total) * 100);
+function BudgetsPage() {
+  const { data: profile } = useProfile();
+  const { data: budgets = [] } = useBudgets();
+  const { data: txns = [] } = useTransactions();
+  const save = useSaveBudget();
+  const del = useDeleteBudget();
+  const currency = profile?.currency ?? "INR";
+  const [editing, setEditing] = useState<Partial<Budget> | null>(null);
+
+  const now = new Date();
+  const spentBy: Record<string, number> = {};
+  txns.filter((t) => {
+    const d = new Date(t.occurred_at);
+    return t.amount < 0 && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).forEach((t) => { spentBy[t.category] = (spentBy[t.category] || 0) + Math.abs(t.amount); });
+
+  const total = budgets.reduce((s, b) => s + b.monthly_limit, 0);
+  const spent = Object.values(spentBy).reduce((s, v) => s + v, 0);
+  const pct = total > 0 ? Math.round((spent / total) * 100) : 0;
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    const form = new FormData(e.target as HTMLFormElement);
+    try {
+      await save.mutateAsync({
+        id: editing.id,
+        category: String(form.get("category")) as Category,
+        monthly_limit: Number(form.get("limit")),
+      });
+      toast.success("Saved");
+      setEditing(null);
+    } catch (e: any) { toast.error(e.message); }
+  };
 
   return (
     <div>
-      <Topbar title="Budgets" subtitle="Gentle caps and smart nudges, not strict rules." />
+      <Topbar title="Budgets" subtitle="Gentle caps, not strict rules." />
 
       <div className="grid lg:grid-cols-3 gap-4 mb-4">
         <div className="glass rounded-3xl p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="text-xs text-muted-foreground">Total monthly budget</div>
-              <div className="font-display text-3xl">{formatINR(total)}</div>
+              <div className="font-display text-3xl">{formatMoney(total, currency)}</div>
             </div>
             <div className="text-right">
-              <div className="text-xs text-muted-foreground">Spent so far</div>
-              <div className="font-display text-3xl">{formatINR(spent)}</div>
+              <div className="text-xs text-muted-foreground">Spent this month</div>
+              <div className="font-display text-3xl">{formatMoney(spent, currency)}</div>
             </div>
           </div>
           <div className="h-3 rounded-full bg-background/60 overflow-hidden">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1.1 }}
+            <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1.1 }}
               className="h-full gradient-primary rounded-full" />
           </div>
-          <div className="text-xs text-muted-foreground mt-2">{pct}% used · {formatINR(total - spent)} remaining</div>
+          <div className="text-xs text-muted-foreground mt-2">{pct}% used · {formatMoney(Math.max(0, total - spent), currency)} remaining</div>
         </div>
-        <div className="glass rounded-3xl p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="size-4 text-primary" /> <span className="text-sm font-medium">AI suggestion</span>
-          </div>
-          <p className="text-sm text-muted-foreground">Lowering Shopping by 15% would put you back on track this month. Want Lumen to set it?</p>
-          <button className="mt-4 w-full py-2 rounded-2xl gradient-primary text-primary-foreground text-sm">Apply suggestion</button>
-        </div>
+        <button onClick={() => setEditing({})} className="glass rounded-3xl p-6 border-dashed flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition">
+          <Plus className="size-6" /> <span>Add budget</span>
+        </button>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {budgets.map((b, i) => {
-          const p = Math.min(100, Math.round((b.spent / b.limit) * 100));
-          const over = b.spent > b.limit;
+          const used = spentBy[b.category] || 0;
+          const p = b.monthly_limit > 0 ? Math.round((used / b.monthly_limit) * 100) : 0;
+          const over = used > b.monthly_limit;
           return (
-            <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="glass rounded-3xl p-5">
+            <motion.div key={b.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+              className="glass rounded-3xl p-5 group">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="size-10 rounded-2xl grid place-items-center text-lg" style={{ background: categoryMeta[b.category].color + "33" }}>
-                    {categoryMeta[b.category].icon}
+                  <div className="size-10 rounded-2xl grid place-items-center text-lg" style={{ background: categoryMeta[b.category]?.color + "33" }}>
+                    {categoryMeta[b.category]?.icon}
                   </div>
                   <div>
                     <div className="font-medium text-sm">{b.category}</div>
-                    <div className="text-xs text-muted-foreground">Monthly</div>
+                    <div className="text-xs text-muted-foreground">{formatMoney(used, currency)} of {formatMoney(b.monthly_limit, currency)}</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">{formatINR(b.limit)}</div>
+                <div className="flex items-center gap-1">
                   <div className="text-sm font-medium" style={{ color: statusColor(p) }}>{p}%</div>
+                  <div className="opacity-0 group-hover:opacity-100 flex gap-0.5 transition ml-1">
+                    <button onClick={() => setEditing(b)} className="p-1 rounded hover:bg-accent/40"><Pencil className="size-3" /></button>
+                    <button onClick={() => del.mutate(b.id)} className="p-1 rounded hover:bg-destructive/20 text-destructive"><Trash2 className="size-3" /></button>
+                  </div>
                 </div>
               </div>
               <div className="h-2 rounded-full bg-background/60 overflow-hidden">
@@ -78,15 +111,34 @@ function Budgets() {
                   className="h-full rounded-full" style={{ background: statusColor(p) }} />
               </div>
               <div className="text-xs mt-2 text-muted-foreground">
-                {over ? <span className="text-destructive">Over by {formatINR(b.spent - b.limit)}</span> : `${formatINR(b.limit - b.spent)} left`}
+                {over ? <span className="text-destructive">Over by {formatMoney(used - b.monthly_limit, currency)}</span> : `${formatMoney(b.monthly_limit - used, currency)} left`}
               </div>
             </motion.div>
           );
         })}
-        <button className="glass rounded-3xl p-5 border-dashed flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition">
-          <Plus className="size-5" /> Add budget
-        </button>
       </div>
+
+      <AnimatePresence>
+        {editing && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setEditing(null)} className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm grid place-items-center p-4">
+            <motion.form onSubmit={submit} initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()} className="glass-strong rounded-[2rem] p-6 w-full max-w-md relative">
+              <button type="button" onClick={() => setEditing(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
+              <h3 className="font-display text-2xl mb-4">{editing.id ? "Edit budget" : "New budget"}</h3>
+              <select name="category" required defaultValue={editing.category ?? "Food"}
+                disabled={!!editing.id}
+                className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm mb-3">
+                {CATEGORIES.filter((c) => c !== "Income").map((c) => <option key={c} value={c}>{categoryMeta[c].icon} {c}</option>)}
+              </select>
+              <input name="limit" type="number" required min="0" step="any" defaultValue={editing.monthly_limit ?? ""}
+                placeholder="Monthly limit" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+              <button type="submit" disabled={save.isPending}
+                className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">Save</button>
+            </motion.form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,87 +1,91 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Download, Sparkles, Trophy, TrendingUp } from "lucide-react";
+import { Trophy, TrendingUp, Sparkles } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { IncomeExpenseArea, CategoryPie } from "@/components/charts/Charts";
-import { monthlySpend, transactions, formatINR } from "@/lib/mock-data";
+import { useTransactions, useProfile, useGoals } from "@/hooks/useFinanceData";
+import { formatMoney } from "@/lib/finance";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/_app/report")({
-  head: () => ({ meta: [{ title: "Year-end Report — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Year Report — Lumen" }] }),
   component: Report,
 });
 
 function Report() {
-  const income = monthlySpend.reduce((s, m) => s + m.income, 0);
-  const expense = monthlySpend.reduce((s, m) => s + m.expense, 0);
-  const savings = monthlySpend.reduce((s, m) => s + m.savings, 0);
+  const { data: profile } = useProfile();
+  const { data: txns = [] } = useTransactions();
+  const { data: goals = [] } = useGoals();
+  const currency = profile?.currency ?? "INR";
+  const year = new Date().getFullYear();
 
-  const byCat = transactions.filter(t=>t.amount<0).reduce<Record<string,number>>((a,t)=>{a[t.category]=(a[t.category]||0)+Math.abs(t.amount);return a;},{});
+  const yearTx = useMemo(() => txns.filter((t) => new Date(t.occurred_at).getFullYear() === year), [txns, year]);
+  const income = yearTx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expense = yearTx.filter((t) => t.amount < 0).reduce((s, t) => s - t.amount, 0);
+  const savings = income - expense;
+
+  const monthly = useMemo(() => {
+    const months = Array.from({ length: 12 }, (_, i) => ({
+      month: new Date(year, i, 1).toLocaleDateString("en-US", { month: "short" }),
+      income: 0, expense: 0, savings: 0,
+    }));
+    yearTx.forEach((t) => {
+      const m = new Date(t.occurred_at).getMonth();
+      if (t.amount > 0) months[m].income += t.amount; else months[m].expense -= t.amount;
+    });
+    months.forEach((m) => (m.savings = m.income - m.expense));
+    return months;
+  }, [yearTx, year]);
+
+  const byCat: Record<string, number> = {};
+  yearTx.filter((t) => t.amount < 0).forEach((t) => { byCat[t.category] = (byCat[t.category] || 0) + Math.abs(t.amount); });
   const pieData = Object.entries(byCat).map(([name, value]) => ({ name, value }));
 
-  const score = 82;
+  const score = Math.min(100, Math.max(0, Math.round((income > 0 ? (savings / income) : 0) * 100 + 30)));
+  const completedGoals = goals.filter((g) => g.saved >= g.target).length;
 
   return (
     <div>
-      <Topbar title="Your 2026, in money" subtitle="A cinematic recap of your financial year." />
+      <Topbar title={`Your ${year}, in money`} subtitle="A calm recap of the year so far." />
 
       <div className="grid lg:grid-cols-3 gap-4 mb-4">
         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           className="glass-strong rounded-[2rem] p-6 lg:col-span-2 relative overflow-hidden">
           <div className="absolute inset-0 gradient-primary opacity-10" />
           <div className="relative">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">Total saved this year</div>
-            <div className="font-display text-6xl gradient-text mt-2">{formatINR(savings)}</div>
-            <div className="mt-2 text-sm text-muted-foreground">From {formatINR(income)} income and {formatINR(expense)} spent.</div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">Total saved</div>
+            <div className="font-display text-6xl gradient-text mt-2">{formatMoney(savings, currency)}</div>
+            <div className="mt-2 text-sm text-muted-foreground">From {formatMoney(income, currency)} earned and {formatMoney(expense, currency)} spent.</div>
           </div>
         </motion.div>
         <div className="glass rounded-3xl p-6 flex flex-col items-center text-center">
           <Trophy className="size-8 text-[var(--color-warning)]" />
-          <div className="text-xs uppercase tracking-widest mt-2 text-muted-foreground">Financial health</div>
+          <div className="text-xs uppercase tracking-widest mt-2 text-muted-foreground">Financial vibe</div>
           <div className="font-display text-5xl mt-1 gradient-text">{score}</div>
-          <div className="text-xs text-muted-foreground">Out of 100 · Excellent</div>
+          <div className="text-xs text-muted-foreground">Out of 100</div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="glass rounded-3xl p-6 lg:col-span-2">
           <h3 className="font-display text-2xl mb-3">A year in flow</h3>
-          <IncomeExpenseArea data={monthlySpend} />
+          <IncomeExpenseArea data={monthly} currency={currency} />
         </div>
         <div className="glass rounded-3xl p-6">
           <h3 className="font-display text-2xl mb-3">Where it went</h3>
-          <CategoryPie data={pieData} />
+          {pieData.length ? <CategoryPie data={pieData} currency={currency} /> : <p className="text-sm text-muted-foreground">No expenses logged.</p>}
         </div>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-4 mt-4">
-        {[
-          { t: "Strongest month", v: "December", s: formatINR(138000) + " saved" },
-          { t: "Biggest category", v: "Shopping", s: formatINR(127000) + " spent" },
-          { t: "Best habit", v: "12-month savings streak", s: "Kept it up all year" },
-        ].map((c, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-            className="glass rounded-3xl p-5">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">{c.t}</div>
-            <div className="font-display text-2xl mt-1">{c.v}</div>
-            <div className="text-xs text-muted-foreground mt-1">{c.s}</div>
-          </motion.div>
-        ))}
       </div>
 
       <div className="glass rounded-3xl p-6 mt-4">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="size-4 text-primary" /><h3 className="font-display text-2xl">AI year-end notes</h3>
+          <Sparkles className="size-4 text-primary" /><h3 className="font-display text-2xl">Reflections</h3>
         </div>
         <ul className="space-y-2 text-sm">
-          <li className="flex gap-2"><TrendingUp className="size-4 text-[var(--color-success)] mt-0.5"/>Your savings rate climbed from 38% in Jan to 49% in Dec — a quiet, beautiful trend.</li>
-          <li className="flex gap-2"><Sparkles className="size-4 text-primary mt-0.5"/>You cancelled 3 subscriptions this year and saved ₹14,400.</li>
-          <li className="flex gap-2"><Trophy className="size-4 text-[var(--color-warning)] mt-0.5"/>You hit 2 savings goals: Emergency Fund and MacBook Pro.</li>
+          <li className="flex gap-2"><TrendingUp className="size-4 text-[var(--color-success)] mt-0.5" />You saved {income > 0 ? Math.round((savings / income) * 100) : 0}% of what you earned this year.</li>
+          <li className="flex gap-2"><Trophy className="size-4 text-[var(--color-warning)] mt-0.5" />{completedGoals} of {goals.length} savings goals reached so far.</li>
         </ul>
       </div>
-
-      <button className="mt-4 px-6 py-3 rounded-2xl gradient-primary text-primary-foreground inline-flex items-center gap-2 shadow-[var(--shadow-elegant)]">
-        <Download className="size-4" /> Download PDF recap
-      </button>
     </div>
   );
 }
