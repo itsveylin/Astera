@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Receipt, BarChart3, Target, Sparkles } from "lucide-react";
+import { LayoutDashboard, Receipt, BarChart3, Target, Settings } from "lucide-react";
 
 const items = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },
   { to: "/transactions", label: "Txns", icon: Receipt },
   { to: "/analytics", label: "Stats", icon: BarChart3 },
   { to: "/goals", label: "Goals", icon: Target },
-  { to: "/assistant", label: "AI", icon: Sparkles },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function MobileNav() {
