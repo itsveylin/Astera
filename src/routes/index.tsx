@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, ShieldCheck, LineChart, Wallet, Brain, Star } fro
 import { Blobs } from "@/components/Blobs";
 import { IncomeExpenseArea, CategoryPie } from "@/components/charts/Charts";
 import { formatMoney } from "@/lib/finance";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const monthlySpend = [
   { month: "Jul", income: 95000, expense: 62000 },
@@ -52,6 +53,7 @@ function Landing() {
             <a href="#testimonials" className="hover:text-foreground transition">Loved by</a>
           </nav>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/auth" className="text-sm px-4 py-2 rounded-2xl hover:bg-accent/40 transition">Sign in</Link>
             <Link to="/dashboard" className="text-sm px-4 py-2 rounded-2xl gradient-primary text-primary-foreground shadow-[var(--shadow-soft)]">
               Open app

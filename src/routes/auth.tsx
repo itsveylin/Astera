@@ -7,6 +7,7 @@ import { Blobs } from "@/components/Blobs";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/components/AuthProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Lumen" }] }),
@@ -64,6 +65,7 @@ function Auth() {
   return (
     <div className="relative min-h-screen flex">
       <Blobs />
+      <div className="absolute top-4 right-4 z-10"><ThemeToggle /></div>
       <div className="hidden lg:flex flex-1 relative items-end p-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-10">

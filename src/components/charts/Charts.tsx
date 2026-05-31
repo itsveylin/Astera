@@ -4,8 +4,8 @@ import {
 } from "recharts";
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
 
-const grid = "oklch(0.7 0.04 280 / 0.15)";
-const axisColor = "oklch(0.55 0.03 280)";
+const grid = "color-mix(in oklab, var(--color-muted-foreground) 25%, transparent)";
+const axisColor = "var(--color-muted-foreground)";
 
 const tooltipStyle = {
   background: "var(--color-popover)",
