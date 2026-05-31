@@ -3,7 +3,17 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, LineChart, Wallet, Brain, Star } from "lucide-react";
 import { Blobs } from "@/components/Blobs";
 import { IncomeExpenseArea, CategoryPie } from "@/components/charts/Charts";
-import { monthlySpend, formatINR } from "@/lib/mock-data";
+import { formatMoney } from "@/lib/finance";
+
+const monthlySpend = [
+  { month: "Jul", income: 95000, expense: 62000 },
+  { month: "Aug", income: 98000, expense: 58000 },
+  { month: "Sep", income: 102000, expense: 65000 },
+  { month: "Oct", income: 99000, expense: 60000 },
+  { month: "Nov", income: 105000, expense: 63000 },
+  { month: "Dec", income: 110000, expense: 59000 },
+];
+const formatINR = (n: number) => formatMoney(n, "INR");
 
 export const Route = createFileRoute("/")({
   head: () => ({
