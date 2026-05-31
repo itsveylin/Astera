@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, LineChart, Wallet, Brain, Star } from "lucide-react";
 import { Blobs } from "@/components/Blobs";
 import { IncomeExpenseArea, CategoryPie } from "@/components/charts/Charts";
-import { formatCurrency } from "@/lib/finance";
+import { formatMoney } from "@/lib/finance";
 
 const monthlySpend = [
   { month: "Jul", income: 95000, expense: 62000 },
