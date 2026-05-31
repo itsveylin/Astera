@@ -53,6 +53,7 @@ function Landing() {
             <a href="#testimonials" className="hover:text-foreground transition">Loved by</a>
           </nav>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/auth" className="text-sm px-4 py-2 rounded-2xl hover:bg-accent/40 transition">Sign in</Link>
             <Link to="/dashboard" className="text-sm px-4 py-2 rounded-2xl gradient-primary text-primary-foreground shadow-[var(--shadow-soft)]">
               Open app
