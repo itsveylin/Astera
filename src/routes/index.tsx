@@ -13,7 +13,7 @@ const monthlySpend = [
   { month: "Nov", income: 105000, expense: 63000 },
   { month: "Dec", income: 110000, expense: 59000 },
 ];
-const formatINR = (n: number) => formatCurrency(n, "INR");
+const formatINR = (n: number) => formatMoney(n, "INR");
 
 export const Route = createFileRoute("/")({
   head: () => ({
