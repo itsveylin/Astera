@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, ShieldCheck, LineChart, Wallet, Brain, Star } fro
 import { Blobs } from "@/components/Blobs";
 import { IncomeExpenseArea, CategoryPie } from "@/components/charts/Charts";
 import { formatMoney } from "@/lib/finance";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const monthlySpend = [
   { month: "Jul", income: 95000, expense: 62000 },
