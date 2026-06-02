@@ -41,21 +41,42 @@ export function useTransactions() {
     },
   });
 }
+async function getVerifiedUserId(): Promise<string> {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) {
+    await supabase.auth.signOut().catch(() => {});
+    throw new Error("Your session has expired. Please sign in again.");
+  }
+  // Ensure a profile row exists for FK / app expectations
+  const { data: prof } = await supabase.from("profiles").select("id").eq("id", data.user.id).maybeSingle();
+  if (!prof) {
+    await supabase.from("profiles").insert({
+      id: data.user.id,
+      display_name: (data.user.user_metadata as any)?.display_name ?? data.user.email?.split("@")[0] ?? "You",
+    } as any);
+  }
+  return data.user.id;
+}
+
 export function useSaveTransaction() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (t: Partial<Transaction> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
       if (t.id) {
         const { id, ...rest } = t;
         const { error } = await supabase.from("transactions").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("transactions").insert({ ...(t as any), user_id: user!.id });
+        const { error } = await supabase.from("transactions").insert({ ...(t as any), user_id: uid });
         if (error) throw error;
       }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["transactions"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["budgets"] });
+      qc.invalidateQueries({ queryKey: ["goals"] });
+    },
   });
 }
 export function useDeleteTransaction() {
@@ -81,17 +102,17 @@ export function useBudgets() {
   });
 }
 export function useSaveBudget() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (b: Partial<Budget> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
       if (b.id) {
         const { id, ...rest } = b;
         const { error } = await supabase.from("budgets").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
         const { error } = await supabase.from("budgets")
-          .upsert({ ...(b as any), user_id: user!.id }, { onConflict: "user_id,category" });
+          .upsert({ ...(b as any), user_id: uid }, { onConflict: "user_id,category" });
         if (error) throw error;
       }
     },
