@@ -21,6 +21,7 @@ function InvestmentsPage() {
   const del = useDeleteInvestment();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Investment> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const invested = investments.reduce((s, i) => s + i.invested, 0);
   const current = investments.reduce((s, i) => s + i.current_value, 0);
