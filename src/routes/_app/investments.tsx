@@ -7,6 +7,7 @@ import { Topbar } from "@/components/Topbar";
 import { CategoryPie } from "@/components/charts/Charts";
 import { useInvestments, useSaveInvestment, useDeleteInvestment, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, INVESTMENT_TYPES, type Investment } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/investments")({
   head: () => ({ meta: [{ title: "Investments — Lumen" }] }),
