@@ -107,13 +107,35 @@ export function useSaveBudget() {
     mutationFn: async (b: Partial<Budget> & { id?: string }) => {
       const uid = await getVerifiedUserId();
       if (b.id) {
-        const { id, ...rest } = b;
-        const { error } = await supabase.from("budgets").update(rest as any).eq("id", id);
+        // Edit: never touch category/user_id — only update mutable fields by id.
+        const patch: Record<string, unknown> = {};
+        if (b.monthly_limit !== undefined) patch.monthly_limit = b.monthly_limit;
+        const { error } = await supabase
+          .from("budgets")
+          .update(patch as any)
+          .eq("id", b.id)
+          .eq("user_id", uid);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("budgets")
-          .upsert({ ...(b as any), user_id: uid }, { onConflict: "user_id,category" });
-        if (error) throw error;
+        // Create: if a budget for this category already exists, update it instead of inserting.
+        const { data: existing } = await supabase
+          .from("budgets")
+          .select("id")
+          .eq("user_id", uid)
+          .eq("category", b.category as string)
+          .maybeSingle();
+        if (existing?.id) {
+          const { error } = await supabase
+            .from("budgets")
+            .update({ monthly_limit: b.monthly_limit } as any)
+            .eq("id", existing.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("budgets")
+            .insert({ category: b.category, monthly_limit: b.monthly_limit, user_id: uid } as any);
+          if (error) throw error;
+        }
       }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["budgets"] }),
