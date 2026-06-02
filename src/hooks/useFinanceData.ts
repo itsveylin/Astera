@@ -181,16 +181,16 @@ export function useInvestments() {
   });
 }
 export function useSaveInvestment() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (i: Partial<Investment> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
       if (i.id) {
         const { id, ...rest } = i;
         const { error } = await supabase.from("investments").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("investments").insert({ ...(i as any), user_id: user!.id });
+        const { error } = await supabase.from("investments").insert({ ...(i as any), user_id: uid });
         if (error) throw error;
       }
     },
