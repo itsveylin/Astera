@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import { useGoals, useSaveGoal, useDeleteGoal, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, type Goal } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/goals")({
   head: () => ({ meta: [{ title: "Goals — Lumen" }] }),
