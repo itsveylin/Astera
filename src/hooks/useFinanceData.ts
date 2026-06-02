@@ -142,16 +142,16 @@ export function useGoals() {
   });
 }
 export function useSaveGoal() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (g: Partial<Goal> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
       if (g.id) {
         const { id, ...rest } = g;
         const { error } = await supabase.from("goals").update(rest as any).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("goals").insert({ ...(g as any), user_id: user!.id });
+        const { error } = await supabase.from("goals").insert({ ...(g as any), user_id: uid });
         if (error) throw error;
       }
     },
