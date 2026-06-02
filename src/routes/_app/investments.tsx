@@ -7,6 +7,7 @@ import { Topbar } from "@/components/Topbar";
 import { CategoryPie } from "@/components/charts/Charts";
 import { useInvestments, useSaveInvestment, useDeleteInvestment, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, INVESTMENT_TYPES, type Investment } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/investments")({
   head: () => ({ meta: [{ title: "Investments — Lumen" }] }),
@@ -20,6 +21,7 @@ function InvestmentsPage() {
   const del = useDeleteInvestment();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Investment> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const invested = investments.reduce((s, i) => s + i.invested, 0);
   const current = investments.reduce((s, i) => s + i.current_value, 0);

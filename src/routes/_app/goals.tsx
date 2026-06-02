@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import { useGoals, useSaveGoal, useDeleteGoal, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, type Goal } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/goals")({
   head: () => ({ meta: [{ title: "Goals — Lumen" }] }),
@@ -21,6 +22,7 @@ function GoalsPage() {
   const del = useDeleteGoal();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Goal> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

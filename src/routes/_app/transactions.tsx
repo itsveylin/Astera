@@ -8,6 +8,7 @@ import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
 } from "@/hooks/useFinanceData";
 import { categoryMeta, CATEGORIES, formatMoney, type Category, type Transaction } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
   head: () => ({ meta: [{ title: "Transactions — Lumen" }] }),
@@ -24,6 +25,7 @@ function TransactionsPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<Category | null>(null);
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const filtered = txns.filter((t) =>
     (!q || t.merchant.toLowerCase().includes(q.toLowerCase())) &&

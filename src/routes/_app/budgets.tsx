@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import { useBudgets, useSaveBudget, useDeleteBudget, useTransactions, useProfile } from "@/hooks/useFinanceData";
 import { CATEGORIES, categoryMeta, formatMoney, type Category, type Budget } from "@/lib/finance";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/budgets")({
   head: () => ({ meta: [{ title: "Budgets — Lumen" }] }),
@@ -26,6 +27,7 @@ function BudgetsPage() {
   const del = useDeleteBudget();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Budget> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const now = new Date();
   const spentBy: Record<string, number> = {};

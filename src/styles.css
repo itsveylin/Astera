@@ -146,12 +146,18 @@
   * {
     border-color: var(--color-border);
   }
+  html {
+    scrollbar-gutter: stable;
+  }
   html, body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+  }
+  body.modal-open {
+    overflow: hidden;
   }
   body {
     background-image: var(--gradient-mesh);
