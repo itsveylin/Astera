@@ -27,6 +27,7 @@ function BudgetsPage() {
   const del = useDeleteBudget();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Budget> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const now = new Date();
   const spentBy: Record<string, number> = {};
