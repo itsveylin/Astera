@@ -25,6 +25,7 @@ function TransactionsPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<Category | null>(null);
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const filtered = txns.filter((t) =>
     (!q || t.merchant.toLowerCase().includes(q.toLowerCase())) &&
