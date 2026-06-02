@@ -44,15 +44,25 @@ function BudgetsPage() {
     e.preventDefault();
     if (!editing) return;
     const form = new FormData(e.target as HTMLFormElement);
+    const limit = Number(form.get("limit"));
+    if (!Number.isFinite(limit) || limit < 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
     try {
-      await save.mutateAsync({
-        id: editing.id,
-        category: String(form.get("category")) as Category,
-        monthly_limit: Number(form.get("limit")),
-      });
+      if (editing.id) {
+        await save.mutateAsync({ id: editing.id, monthly_limit: limit });
+      } else {
+        await save.mutateAsync({
+          category: String(form.get("category")) as Category,
+          monthly_limit: limit,
+        });
+      }
       toast.success("Saved");
       setEditing(null);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (err: any) {
+      toast.error(err?.message ?? "Could not save budget");
+    }
   };
 
   return (
