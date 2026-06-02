@@ -22,6 +22,7 @@ function GoalsPage() {
   const del = useDeleteGoal();
   const currency = profile?.currency ?? "INR";
   const [editing, setEditing] = useState<Partial<Goal> | null>(null);
+  useBodyScrollLock(!!editing);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
