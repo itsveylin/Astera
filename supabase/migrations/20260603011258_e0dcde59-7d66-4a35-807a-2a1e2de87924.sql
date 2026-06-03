@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.sync_goal_saved() FROM PUBLIC, anon, authenticated;

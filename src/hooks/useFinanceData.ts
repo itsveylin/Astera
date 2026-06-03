@@ -191,6 +191,63 @@ export function useDeleteGoal() {
   });
 }
 
+export interface GoalContribution {
+  id: string;
+  goal_id: string;
+  user_id: string;
+  amount: number;
+  note: string | null;
+  created_at: string;
+}
+
+export function useGoalContributions(goalId: string | undefined) {
+  return useQuery({
+    enabled: !!goalId,
+    queryKey: ["goal_contributions", goalId],
+    queryFn: async (): Promise<GoalContribution[]> => {
+      const { data, error } = await supabase
+        .from("goal_contributions" as any)
+        .select("*")
+        .eq("goal_id", goalId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return ((data ?? []) as any[]).map((d) => ({ ...d, amount: Number(d.amount) }));
+    },
+  });
+}
+
+export function useAddGoalContribution() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (c: { goal_id: string; amount: number; note?: string | null }) => {
+      const uid = await getVerifiedUserId();
+      const { error } = await supabase
+        .from("goal_contributions" as any)
+        .insert({ goal_id: c.goal_id, amount: c.amount, note: c.note ?? null, user_id: uid } as any);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["goal_contributions", vars.goal_id] });
+      qc.invalidateQueries({ queryKey: ["goals"] });
+    },
+  });
+}
+
+export function useDeleteGoalContribution() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { id: string; goal_id: string }) => {
+      const { error } = await supabase.from("goal_contributions" as any).delete().eq("id", vars.id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["goal_contributions", vars.goal_id] });
+      qc.invalidateQueries({ queryKey: ["goals"] });
+    },
+  });
+}
+
+
 export function useInvestments() {
   const { user } = useAuth();
   return useQuery({
