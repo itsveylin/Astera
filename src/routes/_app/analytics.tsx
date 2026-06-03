@@ -55,6 +55,17 @@ function Analytics() {
     return days.map((d, i) => ({ day: d, value: Math.round(totals[i] / 4) }));
   }, [txns]);
 
+  const byPayment = useMemo(() => {
+    const o: Record<string, number> = {};
+    txns.filter((t) => t.amount < 0).forEach((t) => {
+      const k = (t.payment_method as PaymentMethod) || "Other";
+      o[k] = (o[k] || 0) + Math.abs(t.amount);
+    });
+    return PAYMENT_METHODS
+      .map((m) => ({ name: m, value: o[m] || 0 }))
+      .filter((x) => x.value > 0);
+  }, [txns]);
+
   const totalSaved = monthly.reduce((s, m) => s + m.savings, 0);
 
   if (txns.length === 0) {
