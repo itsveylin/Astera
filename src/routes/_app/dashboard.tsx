@@ -87,8 +87,9 @@ function Dashboard() {
     <div>
       <Topbar title={`Good day${greet}`} subtitle="A calm view of your money today." />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Net Balance" value={stats.balance} delta={undefined} icon={Wallet} currency={currency} />
+        <StatCard label="Cash in Hand" value={stats.cashInHand} icon={Banknote} accent="accent" currency={currency} />
         <StatCard label="Income (mo)" value={stats.income} icon={ArrowUpRight} accent="success" currency={currency} />
         <StatCard label="Expense (mo)" value={stats.expense} icon={ArrowDownRight} accent="warning" currency={currency} />
         <StatCard label="Saved (mo)" value={stats.savings} icon={PiggyBank} accent="accent" currency={currency} />
