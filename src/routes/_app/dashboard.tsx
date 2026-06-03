@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { Wallet, ArrowDownRight, ArrowUpRight, PiggyBank, TrendingUp, ChevronRight, Plus } from "lucide-react";
+import { Wallet, ArrowDownRight, ArrowUpRight, PiggyBank, TrendingUp, ChevronRight, Plus, Banknote } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { StatCard } from "@/components/StatCard";
 import { IncomeExpenseArea, CategoryPie, SavingsRing } from "@/components/charts/Charts";
 import { useTransactions, useProfile, useInvestments, useGoals, useCashAdjustments } from "@/hooks/useFinanceData";
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
-import { Banknote } from "lucide-react";
 
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Lumen" }] }),
