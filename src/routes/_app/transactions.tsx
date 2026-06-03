@@ -187,6 +187,61 @@ function TransactionsPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {cashOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setCashOpen(false)} className="fixed inset-0 z-50 backdrop-blur-sm bg-foreground/20 grid place-items-center p-4">
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-strong rounded-[2rem] p-6 w-full max-w-md relative">
+              <button type="button" onClick={() => setCashOpen(false)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
+              <h3 className="font-display text-2xl mb-1 flex items-center gap-2"><Banknote className="size-5" /> Cash Adjustment</h3>
+              <p className="text-xs text-muted-foreground mb-4">Current cash in hand: <span className="tabular-nums font-medium text-foreground">{formatMoney(cashInHand, currency)}</span></p>
+              <form onSubmit={submitCash} className="space-y-3">
+                <div className="flex gap-2">
+                  <select name="cash_op" defaultValue="increase" className="glass rounded-2xl px-3 py-2.5 bg-transparent outline-none text-sm">
+                    <option value="increase">Increase</option>
+                    <option value="decrease">Decrease</option>
+                  </select>
+                  <input name="cash_amount" type="number" step="0.01" min="0" required placeholder="Amount"
+                    className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                </div>
+                <input name="cash_note" placeholder="Note (optional, e.g. ATM withdrawal)"
+                  className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                <button type="submit" disabled={addCash.isPending}
+                  className="w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
+                  {addCash.isPending ? "Saving..." : "Save adjustment"}
+                </button>
+              </form>
+              {cashAdjustments.length > 0 && (
+                <div className="mt-5">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Recent adjustments</div>
+                  <div className="max-h-56 overflow-y-auto divide-y divide-border/60">
+                    {cashAdjustments.slice(0, 10).map((a) => (
+                      <div key={a.id} className="flex items-center gap-3 py-2 text-sm">
+                        <div className="flex-1 min-w-0">
+                          <div className={`tabular-nums font-medium ${a.amount > 0 ? "text-[var(--color-success)]" : "text-destructive"}`}>
+                            {a.amount > 0 ? "+" : ""}{formatMoney(a.amount, currency)}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {new Date(a.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+                            {a.note ? ` · ${a.note}` : ""}
+                          </div>
+                        </div>
+                        <button onClick={() => { if (confirm("Delete adjustment?")) delCash.mutate(a.id); }}
+                          className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive">
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
