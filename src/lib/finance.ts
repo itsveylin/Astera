@@ -25,6 +25,17 @@ export const INVESTMENT_TYPES = [
 ] as const;
 export type InvestmentType = (typeof INVESTMENT_TYPES)[number];
 
+export const PAYMENT_METHODS = ["Cash", "UPI", "Card", "Bank Transfer", "Other"] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+export const paymentMethodMeta: Record<PaymentMethod, { color: string; icon: string }> = {
+  Cash: { color: "oklch(0.78 0.16 145)", icon: "💵" },
+  UPI: { color: "oklch(0.75 0.16 260)", icon: "📲" },
+  Card: { color: "oklch(0.72 0.18 320)", icon: "💳" },
+  "Bank Transfer": { color: "oklch(0.72 0.16 220)", icon: "🏦" },
+  Other: { color: "oklch(0.7 0.04 280)", icon: "•" },
+};
+
 const currencyLocale: Record<string, [string, string]> = {
   INR: ["en-IN", "INR"],
   USD: ["en-US", "USD"],
