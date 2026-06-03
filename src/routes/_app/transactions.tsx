@@ -102,6 +102,10 @@ function TransactionsPage() {
             </button>
           ))}
         </div>
+        <button onClick={() => setCashOpen(true)}
+          className="px-4 py-2 rounded-2xl bg-background/40 hover:bg-background/60 text-sm flex items-center gap-1.5 border border-border/60">
+          <Banknote className="size-4" /> Cash: <span className="tabular-nums font-medium">{formatMoney(cashInHand, currency)}</span>
+        </button>
         <button onClick={() => setEditing({})}
           className="px-4 py-2 rounded-2xl gradient-primary text-primary-foreground text-sm flex items-center gap-1.5">
           <Plus className="size-4" /> Add
