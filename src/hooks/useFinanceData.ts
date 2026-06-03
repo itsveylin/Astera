@@ -286,3 +286,52 @@ export function useDeleteInvestment() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["investments"] }),
   });
 }
+
+export interface CashAdjustment {
+  id: string;
+  user_id: string;
+  amount: number;
+  note: string | null;
+  created_at: string;
+}
+
+export function useCashAdjustments() {
+  const { user } = useAuth();
+  return useQuery({
+    enabled: !!user,
+    queryKey: ["cash_adjustments", user?.id],
+    queryFn: async (): Promise<CashAdjustment[]> => {
+      const { data, error } = await supabase
+        .from("cash_adjustments" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return ((data ?? []) as any[]).map((d) => ({ ...d, amount: Number(d.amount) }));
+    },
+  });
+}
+
+export function useAddCashAdjustment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (c: { amount: number; note?: string | null }) => {
+      const uid = await getVerifiedUserId();
+      const { error } = await supabase
+        .from("cash_adjustments" as any)
+        .insert({ amount: c.amount, note: c.note ?? null, user_id: uid } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["cash_adjustments"] }),
+  });
+}
+
+export function useDeleteCashAdjustment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("cash_adjustments" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["cash_adjustments"] }),
+  });
+}
