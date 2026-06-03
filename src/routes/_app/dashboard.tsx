@@ -5,8 +5,9 @@ import { Wallet, ArrowDownRight, ArrowUpRight, PiggyBank, TrendingUp, ChevronRig
 import { Topbar } from "@/components/Topbar";
 import { StatCard } from "@/components/StatCard";
 import { IncomeExpenseArea, CategoryPie, SavingsRing } from "@/components/charts/Charts";
-import { useTransactions, useProfile, useInvestments, useGoals } from "@/hooks/useFinanceData";
+import { useTransactions, useProfile, useInvestments, useGoals, useCashAdjustments } from "@/hooks/useFinanceData";
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
+import { Banknote } from "lucide-react";
 
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Lumen" }] }),
