@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Filter, X, Plus, Pencil, Trash2, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
+  useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment,
 } from "@/hooks/useFinanceData";
-import { categoryMeta, CATEGORIES, formatMoney, type Category, type Transaction } from "@/lib/finance";
+import {
+  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta,
+  type Category, type PaymentMethod, type Transaction,
+} from "@/lib/finance";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
