@@ -22,14 +22,22 @@ export const Route = createFileRoute("/_app/transactions")({
 function TransactionsPage() {
   const { data: profile } = useProfile();
   const { data: txns = [] } = useTransactions();
+  const { data: cashAdjustments = [] } = useCashAdjustments();
   const save = useSaveTransaction();
   const del = useDeleteTransaction();
+  const addCash = useAddCashAdjustment();
+  const delCash = useDeleteCashAdjustment();
   const currency = profile?.currency ?? "INR";
 
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<Category | null>(null);
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
-  useBodyScrollLock(!!editing);
+  const [cashOpen, setCashOpen] = useState(false);
+  useBodyScrollLock(!!editing || cashOpen);
+
+  const cashFromTx = txns.filter((t) => t.payment_method === "Cash").reduce((s, t) => s + t.amount, 0);
+  const cashFromAdj = cashAdjustments.reduce((s, a) => s + a.amount, 0);
+  const cashInHand = cashFromTx + cashFromAdj;
 
   const filtered = txns.filter((t) =>
     (!q || t.merchant.toLowerCase().includes(q.toLowerCase())) &&
@@ -42,18 +50,36 @@ function TransactionsPage() {
     const form = new FormData(e.target as HTMLFormElement);
     const amount = Number(form.get("amount"));
     const isIncome = form.get("type") === "income";
+    const pm = String(form.get("payment_method") || "");
+    if (!pm) { toast.error("Please select a payment method"); return; }
     try {
       await save.mutateAsync({
         id: editing.id,
         merchant: String(form.get("merchant")),
         amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
         category: String(form.get("category")) as Category,
-        payment_method: String(form.get("payment_method") || "") || null,
+        payment_method: pm,
         notes: String(form.get("notes") || "") || null,
         occurred_at: String(form.get("date") || new Date().toISOString()),
       });
       toast.success(editing.id ? "Updated" : "Added");
       setEditing(null);
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const submitCash = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = new FormData(e.target as HTMLFormElement);
+    const amt = Math.abs(Number(form.get("cash_amount")));
+    const op = String(form.get("cash_op"));
+    if (!Number.isFinite(amt) || amt <= 0) { toast.error("Enter a valid amount"); return; }
+    try {
+      await addCash.mutateAsync({
+        amount: op === "decrease" ? -amt : amt,
+        note: String(form.get("cash_note") || "") || null,
+      });
+      toast.success("Cash balance updated");
+      setCashOpen(false);
     } catch (e: any) { toast.error(e.message); }
   };
 
