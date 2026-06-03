@@ -109,6 +109,42 @@ function Analytics() {
         <h3 className="font-display text-2xl mb-4">Top categories</h3>
         <CategoryBars data={byCat.slice(0, 6)} currency={currency} />
       </div>
+
+      <div className="glass rounded-3xl p-6 mt-4">
+        <h3 className="font-display text-2xl mb-1">Spending by payment method</h3>
+        <p className="text-xs text-muted-foreground mb-4">How your money leaves — cash, UPI, card, bank transfer, other.</p>
+        {byPayment.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No spending logged yet.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6 items-center">
+            <CategoryBars data={byPayment} currency={currency} />
+            <div className="space-y-2">
+              {byPayment.map((p) => {
+                const total = byPayment.reduce((s, x) => s + x.value, 0) || 1;
+                const pct = Math.round((p.value / total) * 100);
+                const meta = paymentMethodMeta[p.name as PaymentMethod];
+                return (
+                  <div key={p.name} className="flex items-center gap-3">
+                    <div className="size-9 rounded-2xl grid place-items-center text-base shrink-0"
+                      style={{ background: (meta?.color ?? "oklch(0.7 0.05 280)") + "33" }}>
+                      {meta?.icon ?? "•"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between text-sm">
+                        <span>{p.name}</span>
+                        <span className="text-muted-foreground tabular-nums">{formatMoney(p.value, currency)} · {pct}%</span>
+                      </div>
+                      <div className="h-1.5 mt-1 bg-background/60 rounded-full overflow-hidden">
+                        <div className="h-full" style={{ width: `${pct}%`, background: meta?.color ?? "oklch(0.7 0.1 280)" }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
