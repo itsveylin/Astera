@@ -18,6 +18,7 @@ function Dashboard() {
   const { data: txns = [] } = useTransactions();
   const { data: investments = [] } = useInvestments();
   const { data: goals = [] } = useGoals();
+  const { data: cashAdjustments = [] } = useCashAdjustments();
   const currency = profile?.currency ?? "INR";
   const fmt = (n: number) => formatMoney(n, currency);
 
@@ -32,8 +33,13 @@ function Dashboard() {
     const savings = income - expense;
     const investedValue = investments.reduce((s, i) => s + i.current_value, 0);
     const balance = txns.reduce((s, t) => s + t.amount, 0);
-    return { income, expense, savings, investedValue, balance };
-  }, [txns, investments]);
+    const cashFromTx = txns
+      .filter((t) => t.payment_method === "Cash")
+      .reduce((s, t) => s + t.amount, 0);
+    const cashFromAdj = cashAdjustments.reduce((s, a) => s + a.amount, 0);
+    const cashInHand = cashFromTx + cashFromAdj;
+    return { income, expense, savings, investedValue, balance, cashInHand };
+  }, [txns, investments, cashAdjustments]);
 
   const monthly = useMemo(() => {
     const arr: { month: string; income: number; expense: number; savings: number }[] = [];
