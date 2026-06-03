@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { Wallet, ArrowDownRight, ArrowUpRight, PiggyBank, TrendingUp, ChevronRight, Plus } from "lucide-react";
+import { Wallet, ArrowDownRight, ArrowUpRight, PiggyBank, TrendingUp, ChevronRight, Plus, Banknote } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { StatCard } from "@/components/StatCard";
 import { IncomeExpenseArea, CategoryPie, SavingsRing } from "@/components/charts/Charts";
-import { useTransactions, useProfile, useInvestments, useGoals } from "@/hooks/useFinanceData";
+import { useTransactions, useProfile, useInvestments, useGoals, useCashAdjustments } from "@/hooks/useFinanceData";
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/dashboard")({
@@ -18,6 +18,7 @@ function Dashboard() {
   const { data: txns = [] } = useTransactions();
   const { data: investments = [] } = useInvestments();
   const { data: goals = [] } = useGoals();
+  const { data: cashAdjustments = [] } = useCashAdjustments();
   const currency = profile?.currency ?? "INR";
   const fmt = (n: number) => formatMoney(n, currency);
 
@@ -32,8 +33,13 @@ function Dashboard() {
     const savings = income - expense;
     const investedValue = investments.reduce((s, i) => s + i.current_value, 0);
     const balance = txns.reduce((s, t) => s + t.amount, 0);
-    return { income, expense, savings, investedValue, balance };
-  }, [txns, investments]);
+    const cashFromTx = txns
+      .filter((t) => t.payment_method === "Cash")
+      .reduce((s, t) => s + t.amount, 0);
+    const cashFromAdj = cashAdjustments.reduce((s, a) => s + a.amount, 0);
+    const cashInHand = cashFromTx + cashFromAdj;
+    return { income, expense, savings, investedValue, balance, cashInHand };
+  }, [txns, investments, cashAdjustments]);
 
   const monthly = useMemo(() => {
     const arr: { month: string; income: number; expense: number; savings: number }[] = [];
@@ -81,8 +87,9 @@ function Dashboard() {
     <div>
       <Topbar title={`Good day${greet}`} subtitle="A calm view of your money today." />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Net Balance" value={stats.balance} delta={undefined} icon={Wallet} currency={currency} />
+        <StatCard label="Cash in Hand" value={stats.cashInHand} icon={Banknote} accent="accent" currency={currency} />
         <StatCard label="Income (mo)" value={stats.income} icon={ArrowUpRight} accent="success" currency={currency} />
         <StatCard label="Expense (mo)" value={stats.expense} icon={ArrowDownRight} accent="warning" currency={currency} />
         <StatCard label="Saved (mo)" value={stats.savings} icon={PiggyBank} accent="accent" currency={currency} />
