@@ -166,8 +166,13 @@ function TransactionsPage() {
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   {CATEGORIES.map((c) => <option key={c} value={c}>{categoryMeta[c].icon} {c}</option>)}
                 </select>
-                <input name="payment_method" defaultValue={editing.payment_method ?? ""} placeholder="Payment method (optional)"
-                  className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                <select name="payment_method" required defaultValue={editing.payment_method ?? ""}
+                  className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                  <option value="" disabled>Select payment method…</option>
+                  {PAYMENT_METHODS.map((m) => (
+                    <option key={m} value={m}>{paymentMethodMeta[m].icon} {m}</option>
+                  ))}
+                </select>
                 <input name="date" type="datetime-local"
                   defaultValue={(editing.occurred_at ? new Date(editing.occurred_at) : new Date()).toISOString().slice(0, 16)}
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
