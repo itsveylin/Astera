@@ -74,6 +74,7 @@ function TransactionsPage() {
         merchant: String(form.get("merchant")),
         amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
         category,
+        subcategory: String(form.get("subcategory") || "") || null,
         payment_method: pm,
         notes: String(form.get("notes") || "") || null,
         occurred_at: String(form.get("date") || new Date().toISOString()),
