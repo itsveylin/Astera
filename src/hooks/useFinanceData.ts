@@ -61,14 +61,44 @@ async function getVerifiedUserId(): Promise<string> {
 export function useSaveTransaction() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (t: Partial<Transaction> & { id?: string }) => {
+    mutationFn: async (
+      t: Partial<Transaction> & { id?: string; investment?: { name: string; type: string } | null },
+    ) => {
       const uid = await getVerifiedUserId();
-      if (t.id) {
-        const { id, ...rest } = t;
-        const { error } = await supabase.from("transactions").update(rest as any).eq("id", id);
+      let investment_id: string | null | undefined = t.investment_id ?? null;
+
+      if (t.category === "Investments" && t.investment?.name) {
+        const name = t.investment.name.trim();
+        const type = (t.investment.type || "Mutual Fund").trim();
+        const { data: existing } = await supabase
+          .from("investments")
+          .select("id")
+          .eq("user_id", uid)
+          .ilike("name", name)
+          .maybeSingle();
+        if (existing?.id) {
+          investment_id = existing.id;
+        } else {
+          const { data: created, error: cErr } = await supabase
+            .from("investments")
+            .insert({ user_id: uid, name, type, invested: 0, current_value: 0 } as any)
+            .select("id")
+            .single();
+          if (cErr) throw cErr;
+          investment_id = created!.id;
+        }
+      } else if (t.category && t.category !== "Investments") {
+        investment_id = null;
+      }
+
+      const { id, investment, ...rest } = t as any;
+      const payload = { ...rest, investment_id };
+
+      if (id) {
+        const { error } = await supabase.from("transactions").update(payload).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("transactions").insert({ ...(t as any), user_id: uid });
+        const { error } = await supabase.from("transactions").insert({ ...payload, user_id: uid });
         if (error) throw error;
       }
     },
@@ -76,6 +106,7 @@ export function useSaveTransaction() {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["budgets"] });
       qc.invalidateQueries({ queryKey: ["goals"] });
+      qc.invalidateQueries({ queryKey: ["investments"] });
     },
   });
 }
