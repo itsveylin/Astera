@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
-  useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment,
+  useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES,
