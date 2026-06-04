@@ -84,10 +84,6 @@ function Report() {
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 mt-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="size-4 text-primary" /><h3 className="font-display text-2xl">Reflections</h3>
-        </div>
       {topSubs.length > 0 && (
         <div className="glass rounded-3xl p-6 mt-4">
           <h3 className="font-display text-2xl mb-4">Top subcategories</h3>
