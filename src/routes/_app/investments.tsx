@@ -128,10 +128,21 @@ function InvestmentsPage() {
                 <select name="type" required defaultValue={editing.type ?? "Mutual Fund"} className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   {INVESTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <div className="flex gap-2">
-                  <input name="invested" type="number" required min="0" step="any" defaultValue={editing.invested ?? ""} placeholder="Amount invested" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
-                  <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="Current value" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
-                </div>
+                {editing.id ? (
+                  <>
+                    <div className="glass rounded-2xl px-4 py-2.5 text-sm flex items-center justify-between">
+                      <span className="text-muted-foreground">Total invested</span>
+                      <span className="tabular-nums font-medium">{formatMoney(editing.invested ?? 0, currency)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground -mt-1">Auto-calculated from your Investment transactions. To change it, add or edit an Investment transaction.</p>
+                    <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="Current value" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                  </>
+                ) : (
+                  <div className="flex gap-2">
+                    <input name="invested" type="number" required min="0" step="any" defaultValue={editing.invested ?? ""} placeholder="Amount invested" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="Current value" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                  </div>
+                )}
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
               </div>
               <button type="submit" disabled={save.isPending} className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">Save</button>
