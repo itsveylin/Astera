@@ -41,6 +41,13 @@ function Report() {
   yearTx.filter((t) => t.amount < 0).forEach((t) => { byCat[t.category] = (byCat[t.category] || 0) + Math.abs(t.amount); });
   const pieData = Object.entries(byCat).map(([name, value]) => ({ name, value }));
 
+  const bySub: Record<string, number> = {};
+  yearTx.filter((t) => t.amount < 0 && t.subcategory).forEach((t) => {
+    const k = `${t.category} › ${t.subcategory}`;
+    bySub[k] = (bySub[k] || 0) + Math.abs(t.amount);
+  });
+  const topSubs = Object.entries(bySub).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 8);
+
   const score = Math.min(100, Math.max(0, Math.round((income > 0 ? (savings / income) : 0) * 100 + 30)));
   const completedGoals = goals.filter((g) => g.saved >= g.target).length;
 
@@ -76,6 +83,29 @@ function Report() {
           {pieData.length ? <CategoryPie data={pieData} currency={currency} /> : <p className="text-sm text-muted-foreground">No expenses logged.</p>}
         </div>
       </div>
+
+      {topSubs.length > 0 && (
+        <div className="glass rounded-3xl p-6 mt-4">
+          <h3 className="font-display text-2xl mb-4">Top subcategories</h3>
+          <div className="space-y-2">
+            {topSubs.map((s) => {
+              const total = topSubs.reduce((a, b) => a + b.value, 0) || 1;
+              const pct = Math.round((s.value / total) * 100);
+              return (
+                <div key={s.name} className="text-sm">
+                  <div className="flex justify-between">
+                    <span>{s.name}</span>
+                    <span className="text-muted-foreground tabular-nums">{formatMoney(s.value, currency)} · {pct}%</span>
+                  </div>
+                  <div className="h-1.5 mt-1 bg-background/60 rounded-full overflow-hidden">
+                    <div className="h-full gradient-primary" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="glass rounded-3xl p-6 mt-4">
         <div className="flex items-center gap-2 mb-3">

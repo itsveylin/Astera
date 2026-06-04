@@ -9,7 +9,7 @@ import {
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
 } from "@/hooks/useFinanceData";
 import {
-  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES,
+  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
   type Category, type PaymentMethod, type Transaction,
 } from "@/lib/finance";
 
@@ -74,6 +74,7 @@ function TransactionsPage() {
         merchant: String(form.get("merchant")),
         amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
         category,
+        subcategory: String(form.get("subcategory") || "") || null,
         payment_method: pm,
         notes: String(form.get("notes") || "") || null,
         occurred_at: String(form.get("date") || new Date().toISOString()),
@@ -144,7 +145,7 @@ function TransactionsPage() {
                 <div className="text-sm font-medium truncate">{t.merchant}</div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                   <span>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
-                  <span>·</span><span>{t.category}</span>
+                  <span>·</span><span>{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</span>
                   {t.payment_method ? (<><span>·</span><span>{paymentMethodMeta[t.payment_method as PaymentMethod]?.icon ?? ""} {t.payment_method}</span></>) : null}
                 </div>
               </div>
@@ -184,6 +185,16 @@ function TransactionsPage() {
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   {CATEGORIES.map((c) => <option key={c} value={c}>{categoryMeta[c].icon} {c}</option>)}
                 </select>
+                {getSubcategories(formCategory).length > 0 && (
+                  <select name="subcategory" required defaultValue={editing.subcategory ?? ""}
+                    key={`sub-${formCategory}`}
+                    className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                    <option value="" disabled>Select subcategory…</option>
+                    {getSubcategories(formCategory).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                )}
                 {formCategory === "Investments" && (
                   <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">Investment details</div>
