@@ -66,6 +66,16 @@ function Analytics() {
       .filter((x) => x.value > 0);
   }, [txns]);
 
+  const bySub = useMemo(() => {
+    const o: Record<string, number> = {};
+    txns.filter((t) => t.amount < 0 && t.subcategory).forEach((t) => {
+      const k = `${t.category} › ${t.subcategory}`;
+      o[k] = (o[k] || 0) + Math.abs(t.amount);
+    });
+    return Object.entries(o).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [txns]);
+
+
   const totalSaved = monthly.reduce((s, m) => s + m.savings, 0);
 
   if (txns.length === 0) {
