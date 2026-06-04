@@ -84,6 +84,7 @@ export interface Transaction {
   merchant: string;
   amount: number;
   category: Category;
+  subcategory?: string | null;
   payment_method: string | null;
   notes: string | null;
   occurred_at: string;
