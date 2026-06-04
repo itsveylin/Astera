@@ -24,6 +24,7 @@ function TransactionsPage() {
   const { data: profile } = useProfile();
   const { data: txns = [] } = useTransactions();
   const { data: cashAdjustments = [] } = useCashAdjustments();
+  const { data: investments = [] } = useInvestments();
   const save = useSaveTransaction();
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
@@ -34,7 +35,13 @@ function TransactionsPage() {
   const [cat, setCat] = useState<Category | null>(null);
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
+  const [formCategory, setFormCategory] = useState<Category>("Other");
   useBodyScrollLock(!!editing || cashOpen);
+
+  const linkedInvestment = useMemo(
+    () => (editing?.investment_id ? investments.find((i) => i.id === editing.investment_id) : null),
+    [editing, investments],
+  );
 
   const cashFromTx = txns.filter((t) => t.payment_method === "Cash").reduce((s, t) => s + t.amount, 0);
   const cashFromAdj = cashAdjustments.reduce((s, a) => s + a.amount, 0);
