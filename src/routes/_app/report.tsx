@@ -88,6 +88,33 @@ function Report() {
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="size-4 text-primary" /><h3 className="font-display text-2xl">Reflections</h3>
         </div>
+      {topSubs.length > 0 && (
+        <div className="glass rounded-3xl p-6 mt-4">
+          <h3 className="font-display text-2xl mb-4">Top subcategories</h3>
+          <div className="space-y-2">
+            {topSubs.map((s) => {
+              const total = topSubs.reduce((a, b) => a + b.value, 0) || 1;
+              const pct = Math.round((s.value / total) * 100);
+              return (
+                <div key={s.name} className="text-sm">
+                  <div className="flex justify-between">
+                    <span>{s.name}</span>
+                    <span className="text-muted-foreground tabular-nums">{formatMoney(s.value, currency)} · {pct}%</span>
+                  </div>
+                  <div className="h-1.5 mt-1 bg-background/60 rounded-full overflow-hidden">
+                    <div className="h-full gradient-primary" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="glass rounded-3xl p-6 mt-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="size-4 text-primary" /><h3 className="font-display text-2xl">Reflections</h3>
+        </div>
         <ul className="space-y-2 text-sm">
           <li className="flex gap-2"><TrendingUp className="size-4 text-[var(--color-success)] mt-0.5" />You saved {income > 0 ? Math.round((savings / income) * 100) : 0}% of what you earned this year.</li>
           <li className="flex gap-2"><Trophy className="size-4 text-[var(--color-warning)] mt-0.5" />{completedGoals} of {goals.length} savings goals reached so far.</li>
