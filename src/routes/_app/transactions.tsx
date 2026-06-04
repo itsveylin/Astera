@@ -59,16 +59,25 @@ function TransactionsPage() {
     const amount = Number(form.get("amount"));
     const isIncome = form.get("type") === "income";
     const pm = String(form.get("payment_method") || "");
+    const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
+    let investment: { name: string; type: string } | null = null;
+    if (category === "Investments") {
+      const invName = String(form.get("investment_name") || "").trim();
+      const invType = String(form.get("investment_type") || "Mutual Fund");
+      if (!invName) { toast.error("Please enter an investment name"); return; }
+      investment = { name: invName, type: invType };
+    }
     try {
       await save.mutateAsync({
         id: editing.id,
         merchant: String(form.get("merchant")),
         amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
-        category: String(form.get("category")) as Category,
+        category,
         payment_method: pm,
         notes: String(form.get("notes") || "") || null,
         occurred_at: String(form.get("date") || new Date().toISOString()),
+        investment,
       });
       toast.success(editing.id ? "Updated" : "Added");
       setEditing(null);
