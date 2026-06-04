@@ -205,6 +205,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          investment_id: string | null
           merchant: string
           notes: string | null
           occurred_at: string
@@ -216,6 +217,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          investment_id?: string | null
           merchant: string
           notes?: string | null
           occurred_at?: string
@@ -227,6 +229,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          investment_id?: string | null
           merchant?: string
           notes?: string | null
           occurred_at?: string

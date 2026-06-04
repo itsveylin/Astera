@@ -1,17 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, X, Plus, Pencil, Trash2, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
-  useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment,
+  useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
 } from "@/hooks/useFinanceData";
 import {
-  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta,
+  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES,
   type Category, type PaymentMethod, type Transaction,
 } from "@/lib/finance";
+
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
@@ -23,6 +24,7 @@ function TransactionsPage() {
   const { data: profile } = useProfile();
   const { data: txns = [] } = useTransactions();
   const { data: cashAdjustments = [] } = useCashAdjustments();
+  const { data: investments = [] } = useInvestments();
   const save = useSaveTransaction();
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
@@ -33,7 +35,13 @@ function TransactionsPage() {
   const [cat, setCat] = useState<Category | null>(null);
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
+  const [formCategory, setFormCategory] = useState<Category>("Other");
   useBodyScrollLock(!!editing || cashOpen);
+
+  const linkedInvestment = useMemo(
+    () => (editing?.investment_id ? investments.find((i) => i.id === editing.investment_id) : null),
+    [editing, investments],
+  );
 
   const cashFromTx = txns.filter((t) => t.payment_method === "Cash").reduce((s, t) => s + t.amount, 0);
   const cashFromAdj = cashAdjustments.reduce((s, a) => s + a.amount, 0);
@@ -51,16 +59,25 @@ function TransactionsPage() {
     const amount = Number(form.get("amount"));
     const isIncome = form.get("type") === "income";
     const pm = String(form.get("payment_method") || "");
+    const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
+    let investment: { name: string; type: string } | null = null;
+    if (category === "Investments") {
+      const invName = String(form.get("investment_name") || "").trim();
+      const invType = String(form.get("investment_type") || "Mutual Fund");
+      if (!invName) { toast.error("Please enter an investment name"); return; }
+      investment = { name: invName, type: invType };
+    }
     try {
       await save.mutateAsync({
         id: editing.id,
         merchant: String(form.get("merchant")),
         amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
-        category: String(form.get("category")) as Category,
+        category,
         payment_method: pm,
         notes: String(form.get("notes") || "") || null,
         occurred_at: String(form.get("date") || new Date().toISOString()),
+        investment,
       });
       toast.success(editing.id ? "Updated" : "Added");
       setEditing(null);
@@ -106,7 +123,7 @@ function TransactionsPage() {
           className="px-4 py-2 rounded-2xl bg-background/40 hover:bg-background/60 text-sm flex items-center gap-1.5 border border-border/60">
           <Banknote className="size-4" /> Cash: <span className="tabular-nums font-medium">{formatMoney(cashInHand, currency)}</span>
         </button>
-        <button onClick={() => setEditing({})}
+        <button onClick={() => { setFormCategory("Other"); setEditing({}); }}
           className="px-4 py-2 rounded-2xl gradient-primary text-primary-foreground text-sm flex items-center gap-1.5">
           <Plus className="size-4" /> Add
         </button>
@@ -135,7 +152,7 @@ function TransactionsPage() {
                 {t.amount > 0 ? "+" : ""}{formatMoney(t.amount, currency)}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                <button onClick={() => setEditing(t)} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
+                <button onClick={() => { setFormCategory((t.category as Category) ?? "Other"); setEditing(t); }} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
                 <button onClick={() => { if (confirm("Delete?")) del.mutate(t.id); }} className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive"><Trash2 className="size-3.5" /></button>
               </div>
             </motion.div>
@@ -162,10 +179,31 @@ function TransactionsPage() {
                   <input name="amount" type="number" step="0.01" required defaultValue={editing.amount ? Math.abs(editing.amount) : ""}
                     placeholder="Amount" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 </div>
-                <select name="category" required defaultValue={editing.category ?? "Other"}
+                <select name="category" required value={formCategory}
+                  onChange={(e) => setFormCategory(e.target.value as Category)}
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   {CATEGORIES.map((c) => <option key={c} value={c}>{categoryMeta[c].icon} {c}</option>)}
                 </select>
+                {formCategory === "Investments" && (
+                  <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">Investment details</div>
+                    <input name="investment_name" required list="investment-names"
+                      defaultValue={linkedInvestment?.name ?? ""}
+                      placeholder="Investment name (e.g. Parag Parikh Flexi Cap)"
+                      className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    <datalist id="investment-names">
+                      {investments.map((i) => <option key={i.id} value={i.name} />)}
+                    </datalist>
+                    <select name="investment_type" required
+                      defaultValue={linkedInvestment?.type ?? "Mutual Fund"}
+                      className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                      {INVESTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <p className="text-xs text-muted-foreground">
+                      Automatically tracked in your Investments portfolio. If the name matches an existing holding, the invested total is increased.
+                    </p>
+                  </div>
+                )}
                 <select name="payment_method" required defaultValue={editing.payment_method ?? ""}
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   <option value="" disabled>Select payment method…</option>
