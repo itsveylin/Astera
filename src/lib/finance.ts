@@ -61,6 +61,7 @@ export interface Transaction {
   payment_method: string | null;
   notes: string | null;
   occurred_at: string;
+  investment_id?: string | null;
 }
 export interface Budget { id: string; category: Category; monthly_limit: number; }
 export interface Goal {
