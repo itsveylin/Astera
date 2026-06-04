@@ -145,7 +145,7 @@ function TransactionsPage() {
                 <div className="text-sm font-medium truncate">{t.merchant}</div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                   <span>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
-                  <span>·</span><span>{t.category}</span>
+                  <span>·</span><span>{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</span>
                   {t.payment_method ? (<><span>·</span><span>{paymentMethodMeta[t.payment_method as PaymentMethod]?.icon ?? ""} {t.payment_method}</span></>) : null}
                 </div>
               </div>
