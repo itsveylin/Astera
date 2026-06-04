@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, X, Plus, Pencil, Trash2, Banknote } from "lucide-react";
 import { toast } from "sonner";
