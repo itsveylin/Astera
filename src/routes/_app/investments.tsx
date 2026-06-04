@@ -37,14 +37,16 @@ function InvestmentsPage() {
     if (!editing) return;
     const form = new FormData(e.target as HTMLFormElement);
     try {
-      await save.mutateAsync({
+      const payload: any = {
         id: editing.id,
         name: String(form.get("name")),
         type: String(form.get("type")),
-        invested: Number(form.get("invested")),
         current_value: Number(form.get("current_value")),
         notes: String(form.get("notes") || "") || null,
-      });
+      };
+      // Only allow manual edits to "invested" for holdings without any linked transactions yet.
+      if (!editing.id) payload.invested = Number(form.get("invested") || 0);
+      await save.mutateAsync(payload);
       toast.success("Saved");
       setEditing(null);
     } catch (e: any) { toast.error(e.message); }
