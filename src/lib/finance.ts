@@ -1,6 +1,6 @@
 export const CATEGORIES = [
   "Food", "Groceries", "Transport", "Shopping", "Entertainment",
-  "Bills", "Healthcare", "Travel", "Subscriptions", "Investments",
+  "Bills", "Taxes", "Healthcare", "Travel", "Subscriptions", "Investments",
   "Income", "Other",
 ] as const;
 export type Category = (typeof CATEGORIES)[number];
@@ -11,6 +11,7 @@ export const categoryMeta: Record<Category, { color: string; icon: string }> = {
   Shopping: { color: "oklch(0.72 0.18 340)", icon: "🛍️" },
   Entertainment: { color: "oklch(0.7 0.2 295)", icon: "🎬" },
   Bills: { color: "oklch(0.7 0.16 60)", icon: "🧾" },
+  Taxes: { color: "oklch(0.7 0.16 35)", icon: "🧮" },
   Healthcare: { color: "oklch(0.72 0.16 10)", icon: "💊" },
   Travel: { color: "oklch(0.75 0.16 220)", icon: "✈️" },
   Groceries: { color: "oklch(0.74 0.16 145)", icon: "🥬" },
@@ -19,6 +20,31 @@ export const categoryMeta: Record<Category, { color: string; icon: string }> = {
   Income: { color: "oklch(0.72 0.18 155)", icon: "💰" },
   Other: { color: "oklch(0.7 0.04 280)", icon: "✨" },
 };
+
+export const SUBCATEGORIES: Partial<Record<Category, readonly string[]>> = {
+  Bills: [
+    "Rent", "Electricity", "Water", "Gas", "Internet", "Mobile Recharge",
+    "Insurance", "Maintenance", "EMI / Loan Payment", "Other Bills",
+  ],
+  Taxes: [
+    "Income Tax", "Property Tax", "Professional Tax", "Capital Gains Tax", "Other Taxes",
+  ],
+  Food: ["Dining Out", "Cafe / Coffee", "Snacks", "Delivery", "Other Food"],
+  Transport: ["Fuel", "Public Transit", "Taxi / Ride-share", "Parking", "Vehicle Service", "Other Transport"],
+  Shopping: ["Clothing", "Electronics", "Home", "Gifts", "Other Shopping"],
+  Entertainment: ["Movies", "Events", "Games", "Music", "Other Entertainment"],
+  Healthcare: ["Doctor", "Pharmacy", "Diagnostics", "Insurance Premium", "Other Healthcare"],
+  Travel: ["Flights", "Hotels", "Transport", "Activities", "Other Travel"],
+  Groceries: ["Supermarket", "Produce", "Household", "Other Groceries"],
+  Subscriptions: ["Streaming", "Software", "News & Media", "Membership", "Other Subscription"],
+  Income: ["Salary", "Freelance", "Refund", "Interest", "Gift", "Other Income"],
+};
+
+export function getSubcategories(category: Category | string | null | undefined): readonly string[] {
+  if (!category) return [];
+  return SUBCATEGORIES[category as Category] ?? [];
+}
+
 
 export const INVESTMENT_TYPES = [
   "Mutual Fund", "SIP", "Stock", "ETF", "Crypto", "Gold", "Fixed Deposit",
