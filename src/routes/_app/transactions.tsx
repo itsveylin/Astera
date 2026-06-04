@@ -185,6 +185,16 @@ function TransactionsPage() {
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   {CATEGORIES.map((c) => <option key={c} value={c}>{categoryMeta[c].icon} {c}</option>)}
                 </select>
+                {getSubcategories(formCategory).length > 0 && (
+                  <select name="subcategory" required defaultValue={editing.subcategory ?? ""}
+                    key={`sub-${formCategory}`}
+                    className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                    <option value="" disabled>Select subcategory…</option>
+                    {getSubcategories(formCategory).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                )}
                 {formCategory === "Investments" && (
                   <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">Investment details</div>
