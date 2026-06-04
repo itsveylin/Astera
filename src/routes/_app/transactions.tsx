@@ -9,7 +9,7 @@ import {
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
 } from "@/hooks/useFinanceData";
 import {
-  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES,
+  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
   type Category, type PaymentMethod, type Transaction,
 } from "@/lib/finance";
 
