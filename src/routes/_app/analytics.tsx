@@ -120,6 +120,15 @@ function Analytics() {
         <CategoryBars data={byCat.slice(0, 6)} currency={currency} />
       </div>
 
+      {bySub.length > 0 && (
+        <div className="glass rounded-3xl p-6 mt-4">
+          <h3 className="font-display text-2xl mb-1">Subcategory breakdown</h3>
+          <p className="text-xs text-muted-foreground mb-4">Where your money actually goes — down to the subcategory.</p>
+          <CategoryBars data={bySub.slice(0, 10)} currency={currency} />
+        </div>
+      )}
+
+
       <div className="glass rounded-3xl p-6 mt-4">
         <h3 className="font-display text-2xl mb-1">Spending by payment method</h3>
         <p className="text-xs text-muted-foreground mb-4">How your money leaves — cash, UPI, card, bank transfer, other.</p>
