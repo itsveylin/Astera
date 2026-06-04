@@ -41,6 +41,13 @@ function Report() {
   yearTx.filter((t) => t.amount < 0).forEach((t) => { byCat[t.category] = (byCat[t.category] || 0) + Math.abs(t.amount); });
   const pieData = Object.entries(byCat).map(([name, value]) => ({ name, value }));
 
+  const bySub: Record<string, number> = {};
+  yearTx.filter((t) => t.amount < 0 && t.subcategory).forEach((t) => {
+    const k = `${t.category} › ${t.subcategory}`;
+    bySub[k] = (bySub[k] || 0) + Math.abs(t.amount);
+  });
+  const topSubs = Object.entries(bySub).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 8);
+
   const score = Math.min(100, Math.max(0, Math.round((income > 0 ? (savings / income) : 0) * 100 + 30)));
   const completedGoals = goals.filter((g) => g.saved >= g.target).length;
 
