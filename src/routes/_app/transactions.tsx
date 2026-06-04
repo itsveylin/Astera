@@ -9,9 +9,10 @@ import {
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment,
 } from "@/hooks/useFinanceData";
 import {
-  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta,
+  categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES,
   type Category, type PaymentMethod, type Transaction,
 } from "@/lib/finance";
+import { useInvestments } from "@/hooks/useFinanceData";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
