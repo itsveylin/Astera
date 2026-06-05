@@ -163,7 +163,10 @@ function TransactionsPage() {
                 {categoryMeta[t.category as Category]?.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{t.merchant}</div>
+                <div className="text-sm font-medium truncate flex items-center gap-1.5">
+                  {t.merchant}
+                  {t.recurring_id ? <span title="Recurring" className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary"><Repeat className="size-2.5" />Recurring</span> : null}
+                </div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                   <span>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
                   <span>·</span><span>{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</span>
