@@ -92,7 +92,7 @@ function TransactionsPage() {
         const start = startRaw ? new Date(startRaw).toISOString() : new Date(occurred_at).toISOString();
         const end = endRaw ? new Date(endRaw).toISOString() : null;
         // Next run is one period after the just-created transaction so we don't double-post today.
-        const next = (await import("@/lib/finance")).advanceDate(new Date(start), frequency).toISOString();
+        const next = advanceDate(new Date(start), frequency).toISOString();
         await saveRecurring.mutateAsync({
           merchant, amount: signedAmount, category, subcategory,
           payment_method: pm, notes,
