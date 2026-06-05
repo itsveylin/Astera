@@ -15,6 +15,7 @@ function AppLayout() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const nav = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useRecurringRunner();
 
   useEffect(() => {
     if (loading) return;
