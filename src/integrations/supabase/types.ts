@@ -199,6 +199,69 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          end_date: string | null
+          frequency: string
+          id: string
+          investment_name: string | null
+          investment_type: string | null
+          last_run: string | null
+          merchant: string
+          next_run: string
+          notes: string | null
+          paused: boolean
+          payment_method: string | null
+          start_date: string
+          subcategory: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          investment_name?: string | null
+          investment_type?: string | null
+          last_run?: string | null
+          merchant: string
+          next_run?: string
+          notes?: string | null
+          paused?: boolean
+          payment_method?: string | null
+          start_date?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          investment_name?: string | null
+          investment_type?: string | null
+          last_run?: string | null
+          merchant?: string
+          next_run?: string
+          notes?: string | null
+          paused?: boolean
+          payment_method?: string | null
+          start_date?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -210,6 +273,7 @@ export type Database = {
           notes: string | null
           occurred_at: string
           payment_method: string | null
+          recurring_id: string | null
           subcategory: string | null
           user_id: string
         }
@@ -223,6 +287,7 @@ export type Database = {
           notes?: string | null
           occurred_at?: string
           payment_method?: string | null
+          recurring_id?: string | null
           subcategory?: string | null
           user_id: string
         }
@@ -236,10 +301,19 @@ export type Database = {
           notes?: string | null
           occurred_at?: string
           payment_method?: string | null
+          recurring_id?: string | null
           subcategory?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_recurring_id_fkey"
+            columns: ["recurring_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
