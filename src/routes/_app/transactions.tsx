@@ -251,6 +251,33 @@ function TransactionsPage() {
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)"
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
+                {!editing.id && (
+                  <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
+                    <label className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2"><Repeat className="size-4" /> Recurring transaction?</span>
+                      <input type="checkbox" checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} className="size-4" />
+                    </label>
+                    {isRecurring && (
+                      <div className="space-y-2">
+                        <select name="frequency" defaultValue="Monthly"
+                          className="w-full glass rounded-2xl px-4 py-2 bg-transparent outline-none text-sm">
+                          {RECURRING_FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                        </select>
+                        <div className="flex gap-2">
+                          <label className="flex-1 text-xs text-muted-foreground">
+                            Start
+                            <input name="rec_start" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
+                          </label>
+                          <label className="flex-1 text-xs text-muted-foreground">
+                            End (optional)
+                            <input name="rec_end" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
+                          </label>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Future occurrences post automatically when you next open the app.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <button type="submit" disabled={save.isPending}
                 className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
