@@ -66,26 +66,43 @@ function TransactionsPage() {
     const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
     let investment: { name: string; type: string } | null = null;
+    let invName = "", invType = "Mutual Fund";
     if (category === "Investments") {
-      const invName = String(form.get("investment_name") || "").trim();
-      const invType = String(form.get("investment_type") || "Mutual Fund");
+      invName = String(form.get("investment_name") || "").trim();
+      invType = String(form.get("investment_type") || "Mutual Fund");
       if (!invName) { toast.error("Please enter an investment name"); return; }
       investment = { name: invName, type: invType };
     }
+    const signedAmount = isIncome ? Math.abs(amount) : -Math.abs(amount);
+    const subcategory = String(form.get("subcategory") || "") || null;
+    const notes = String(form.get("notes") || "") || null;
+    const merchant = String(form.get("merchant"));
+    const occurred_at = String(form.get("date") || new Date().toISOString());
+
     try {
       await save.mutateAsync({
-        id: editing.id,
-        merchant: String(form.get("merchant")),
-        amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
-        category,
-        subcategory: String(form.get("subcategory") || "") || null,
-        payment_method: pm,
-        notes: String(form.get("notes") || "") || null,
-        occurred_at: String(form.get("date") || new Date().toISOString()),
-        investment,
+        id: editing.id, merchant, amount: signedAmount, category, subcategory,
+        payment_method: pm, notes, occurred_at, investment,
       });
+      // Only attach recurring on NEW transactions (avoid duplicate rules on edit).
+      if (!editing.id && isRecurring) {
+        const frequency = String(form.get("frequency") || "Monthly") as RecurringFrequency;
+        const startRaw = String(form.get("rec_start") || "");
+        const endRaw = String(form.get("rec_end") || "");
+        const start = startRaw ? new Date(startRaw).toISOString() : new Date(occurred_at).toISOString();
+        const end = endRaw ? new Date(endRaw).toISOString() : null;
+        // Next run is one period after the just-created transaction so we don't double-post today.
+        const next = (await import("@/lib/finance")).advanceDate(new Date(start), frequency).toISOString();
+        await saveRecurring.mutateAsync({
+          merchant, amount: signedAmount, category, subcategory,
+          payment_method: pm, notes,
+          investment_name: invName || null, investment_type: category === "Investments" ? invType : null,
+          frequency, start_date: start, end_date: end, next_run: next, paused: false,
+        } as any);
+      }
       toast.success(editing.id ? "Updated" : "Added");
       setEditing(null);
+      setIsRecurring(false);
     } catch (e: any) { toast.error(e.message); }
   };
 
