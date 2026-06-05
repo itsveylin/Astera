@@ -371,3 +371,145 @@ export function useDeleteCashAdjustment() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["cash_adjustments"] }),
   });
 }
+
+export function useRecurringTransactions() {
+  const { user } = useAuth();
+  return useQuery({
+    enabled: !!user,
+    queryKey: ["recurring", user?.id],
+    queryFn: async (): Promise<RecurringTransaction[]> => {
+      const { data, error } = await supabase
+        .from("recurring_transactions" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return ((data ?? []) as any[]).map((d) => ({ ...d, amount: Number(d.amount) }));
+    },
+  });
+}
+
+export function useSaveRecurring() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (r: Partial<RecurringTransaction> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
+      if (r.id) {
+        const { id, user_id, created_at, updated_at, last_run, ...rest } = r as any;
+        const { error } = await supabase.from("recurring_transactions" as any).update(rest).eq("id", id);
+        if (error) throw error;
+      } else {
+        const payload = { ...r, user_id: uid, next_run: r.next_run ?? r.start_date ?? new Date().toISOString() };
+        const { error } = await supabase.from("recurring_transactions" as any).insert(payload as any);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recurring"] }),
+  });
+}
+
+export function useDeleteRecurring() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("recurring_transactions" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["recurring"] });
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+}
+
+export function useToggleRecurringPause() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { id: string; paused: boolean }) => {
+      const { error } = await supabase.from("recurring_transactions" as any)
+        .update({ paused: vars.paused } as any).eq("id", vars.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recurring"] }),
+  });
+}
+
+/**
+ * Runs once when the user logs in. Looks for active recurring rules whose
+ * next_run is in the past and materializes the missed occurrences into
+ * the transactions table, advancing next_run/last_run as it goes.
+ */
+export function useRecurringRunner() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const now = new Date();
+      const { data: rules } = await supabase
+        .from("recurring_transactions" as any)
+        .select("*")
+        .eq("paused", false)
+        .lte("next_run", now.toISOString());
+      if (cancelled || !rules?.length) return;
+
+      let generated = 0;
+      for (const raw of rules as any[]) {
+        const rule = raw as RecurringTransaction;
+        let next = new Date(rule.next_run);
+        const end = rule.end_date ? new Date(rule.end_date) : null;
+        let last: Date | null = rule.last_run ? new Date(rule.last_run) : null;
+        const inserts: any[] = [];
+        // safety cap so a stale rule can't insert thousands of rows in one go
+        let guard = 0;
+        while (next <= now && (!end || next <= end) && guard < 365) {
+          let investment_id: string | null = null;
+          if (rule.category === "Investments" && rule.investment_name) {
+            const { data: existing } = await supabase.from("investments")
+              .select("id").eq("user_id", user.id).ilike("name", rule.investment_name).maybeSingle();
+            if (existing?.id) investment_id = existing.id;
+            else {
+              const { data: created } = await supabase.from("investments")
+                .insert({ user_id: user.id, name: rule.investment_name, type: rule.investment_type || "Mutual Fund", invested: 0, current_value: 0 } as any)
+                .select("id").single();
+              investment_id = created?.id ?? null;
+            }
+          }
+          inserts.push({
+            user_id: user.id,
+            merchant: rule.merchant,
+            amount: rule.amount,
+            category: rule.category,
+            subcategory: rule.subcategory,
+            payment_method: rule.payment_method,
+            notes: rule.notes,
+            occurred_at: next.toISOString(),
+            investment_id,
+            recurring_id: rule.id,
+          });
+          last = next;
+          next = advanceDate(next, rule.frequency as RecurringFrequency);
+          guard++;
+        }
+        if (inserts.length) {
+          const { error } = await supabase.from("transactions").insert(inserts as any);
+          if (!error) {
+            generated += inserts.length;
+            await supabase.from("recurring_transactions" as any)
+              .update({ next_run: next.toISOString(), last_run: last?.toISOString() ?? null } as any)
+              .eq("id", rule.id);
+          }
+        }
+      }
+      if (generated > 0) {
+        qc.invalidateQueries({ queryKey: ["transactions"] });
+        qc.invalidateQueries({ queryKey: ["recurring"] });
+        qc.invalidateQueries({ queryKey: ["investments"] });
+        qc.invalidateQueries({ queryKey: ["budgets"] });
+        qc.invalidateQueries({ queryKey: ["goals"] });
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+}
