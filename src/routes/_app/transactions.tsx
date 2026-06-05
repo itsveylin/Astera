@@ -11,7 +11,7 @@ import {
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
-  RECURRING_FREQUENCIES,
+  RECURRING_FREQUENCIES, advanceDate,
   type Category, type PaymentMethod, type Transaction, type RecurringFrequency,
 } from "@/lib/finance";
 
