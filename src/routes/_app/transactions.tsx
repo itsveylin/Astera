@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, Plus, Pencil, Trash2, Banknote } from "lucide-react";
+import { Search, Filter, X, Plus, Pencil, Trash2, Banknote, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
+  useSaveRecurring,
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
-  type Category, type PaymentMethod, type Transaction,
+  RECURRING_FREQUENCIES,
+  type Category, type PaymentMethod, type Transaction, type RecurringFrequency,
 } from "@/lib/finance";
 
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
