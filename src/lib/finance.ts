@@ -89,11 +89,48 @@ export interface Transaction {
   notes: string | null;
   occurred_at: string;
   investment_id?: string | null;
+  recurring_id?: string | null;
 }
 export interface Budget { id: string; category: Category; monthly_limit: number; }
 export interface Goal {
   id: string; name: string; emoji: string;
   target: number; saved: number; deadline: string | null;
+}
+
+export const RECURRING_FREQUENCIES = ["Daily", "Weekly", "Monthly", "Quarterly", "Yearly"] as const;
+export type RecurringFrequency = (typeof RECURRING_FREQUENCIES)[number];
+
+export interface RecurringTransaction {
+  id: string;
+  user_id: string;
+  merchant: string;
+  amount: number;
+  category: Category;
+  subcategory: string | null;
+  payment_method: string | null;
+  notes: string | null;
+  investment_name: string | null;
+  investment_type: string | null;
+  frequency: RecurringFrequency;
+  start_date: string;
+  end_date: string | null;
+  next_run: string;
+  last_run: string | null;
+  paused: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export function advanceDate(d: Date, freq: RecurringFrequency): Date {
+  const n = new Date(d);
+  switch (freq) {
+    case "Daily": n.setDate(n.getDate() + 1); break;
+    case "Weekly": n.setDate(n.getDate() + 7); break;
+    case "Monthly": n.setMonth(n.getMonth() + 1); break;
+    case "Quarterly": n.setMonth(n.getMonth() + 3); break;
+    case "Yearly": n.setFullYear(n.getFullYear() + 1); break;
+  }
+  return n;
 }
 export interface Investment {
   id: string; name: string; type: string;

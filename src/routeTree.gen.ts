@@ -17,6 +17,7 @@ import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
 import { Route as AppSubscriptionsRouteImport } from './routes/_app/subscriptions'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppReportRouteImport } from './routes/_app/report'
+import { Route as AppRecurringRouteImport } from './routes/_app/recurring'
 import { Route as AppInvestmentsRouteImport } from './routes/_app/investments'
 import { Route as AppGoalsRouteImport } from './routes/_app/goals'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
@@ -62,6 +63,11 @@ const AppReportRoute = AppReportRouteImport.update({
   path: '/report',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRecurringRoute = AppRecurringRouteImport.update({
+  id: '/recurring',
+  path: '/recurring',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInvestmentsRoute = AppInvestmentsRouteImport.update({
   id: '/investments',
   path: '/investments',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
   '/investments': typeof AppInvestmentsRoute
+  '/recurring': typeof AppRecurringRoute
   '/report': typeof AppReportRoute
   '/settings': typeof AppSettingsRoute
   '/subscriptions': typeof AppSubscriptionsRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
   '/investments': typeof AppInvestmentsRoute
+  '/recurring': typeof AppRecurringRoute
   '/report': typeof AppReportRoute
   '/settings': typeof AppSettingsRoute
   '/subscriptions': typeof AppSubscriptionsRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/goals': typeof AppGoalsRoute
   '/_app/investments': typeof AppInvestmentsRoute
+  '/_app/recurring': typeof AppRecurringRoute
   '/_app/report': typeof AppReportRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/subscriptions': typeof AppSubscriptionsRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/goals'
     | '/investments'
+    | '/recurring'
     | '/report'
     | '/settings'
     | '/subscriptions'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/goals'
     | '/investments'
+    | '/recurring'
     | '/report'
     | '/settings'
     | '/subscriptions'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/goals'
     | '/_app/investments'
+    | '/_app/recurring'
     | '/_app/report'
     | '/_app/settings'
     | '/_app/subscriptions'
@@ -243,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReportRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/recurring': {
+      id: '/_app/recurring'
+      path: '/recurring'
+      fullPath: '/recurring'
+      preLoaderRoute: typeof AppRecurringRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/investments': {
       id: '/_app/investments'
       path: '/investments'
@@ -287,6 +306,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppGoalsRoute: typeof AppGoalsRoute
   AppInvestmentsRoute: typeof AppInvestmentsRoute
+  AppRecurringRoute: typeof AppRecurringRoute
   AppReportRoute: typeof AppReportRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSubscriptionsRoute: typeof AppSubscriptionsRoute
@@ -299,6 +319,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppGoalsRoute: AppGoalsRoute,
   AppInvestmentsRoute: AppInvestmentsRoute,
+  AppRecurringRoute: AppRecurringRoute,
   AppReportRoute: AppReportRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSubscriptionsRoute: AppSubscriptionsRoute,

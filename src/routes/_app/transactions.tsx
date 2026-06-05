@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, Plus, Pencil, Trash2, Banknote } from "lucide-react";
+import { Search, Filter, X, Plus, Pencil, Trash2, Banknote, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
+  useSaveRecurring,
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
-  type Category, type PaymentMethod, type Transaction,
+  RECURRING_FREQUENCIES, advanceDate,
+  type Category, type PaymentMethod, type Transaction, type RecurringFrequency,
 } from "@/lib/finance";
 
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -29,6 +31,7 @@ function TransactionsPage() {
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
   const delCash = useDeleteCashAdjustment();
+  const saveRecurring = useSaveRecurring();
   const currency = profile?.currency ?? "INR";
 
   const [q, setQ] = useState("");
@@ -36,6 +39,7 @@ function TransactionsPage() {
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
   const [formCategory, setFormCategory] = useState<Category>("Other");
+  const [isRecurring, setIsRecurring] = useState(false);
   useBodyScrollLock(!!editing || cashOpen);
 
   const linkedInvestment = useMemo(
@@ -62,26 +66,43 @@ function TransactionsPage() {
     const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
     let investment: { name: string; type: string } | null = null;
+    let invName = "", invType = "Mutual Fund";
     if (category === "Investments") {
-      const invName = String(form.get("investment_name") || "").trim();
-      const invType = String(form.get("investment_type") || "Mutual Fund");
+      invName = String(form.get("investment_name") || "").trim();
+      invType = String(form.get("investment_type") || "Mutual Fund");
       if (!invName) { toast.error("Please enter an investment name"); return; }
       investment = { name: invName, type: invType };
     }
+    const signedAmount = isIncome ? Math.abs(amount) : -Math.abs(amount);
+    const subcategory = String(form.get("subcategory") || "") || null;
+    const notes = String(form.get("notes") || "") || null;
+    const merchant = String(form.get("merchant"));
+    const occurred_at = String(form.get("date") || new Date().toISOString());
+
     try {
       await save.mutateAsync({
-        id: editing.id,
-        merchant: String(form.get("merchant")),
-        amount: isIncome ? Math.abs(amount) : -Math.abs(amount),
-        category,
-        subcategory: String(form.get("subcategory") || "") || null,
-        payment_method: pm,
-        notes: String(form.get("notes") || "") || null,
-        occurred_at: String(form.get("date") || new Date().toISOString()),
-        investment,
+        id: editing.id, merchant, amount: signedAmount, category, subcategory,
+        payment_method: pm, notes, occurred_at, investment,
       });
+      // Only attach recurring on NEW transactions (avoid duplicate rules on edit).
+      if (!editing.id && isRecurring) {
+        const frequency = String(form.get("frequency") || "Monthly") as RecurringFrequency;
+        const startRaw = String(form.get("rec_start") || "");
+        const endRaw = String(form.get("rec_end") || "");
+        const start = startRaw ? new Date(startRaw).toISOString() : new Date(occurred_at).toISOString();
+        const end = endRaw ? new Date(endRaw).toISOString() : null;
+        // Next run is one period after the just-created transaction so we don't double-post today.
+        const next = advanceDate(new Date(start), frequency).toISOString();
+        await saveRecurring.mutateAsync({
+          merchant, amount: signedAmount, category, subcategory,
+          payment_method: pm, notes,
+          investment_name: invName || null, investment_type: category === "Investments" ? invType : null,
+          frequency, start_date: start, end_date: end, next_run: next, paused: false,
+        } as any);
+      }
       toast.success(editing.id ? "Updated" : "Added");
       setEditing(null);
+      setIsRecurring(false);
     } catch (e: any) { toast.error(e.message); }
   };
 
@@ -124,7 +145,7 @@ function TransactionsPage() {
           className="px-4 py-2 rounded-2xl bg-background/40 hover:bg-background/60 text-sm flex items-center gap-1.5 border border-border/60">
           <Banknote className="size-4" /> Cash: <span className="tabular-nums font-medium">{formatMoney(cashInHand, currency)}</span>
         </button>
-        <button onClick={() => { setFormCategory("Other"); setEditing({}); }}
+        <button onClick={() => { setFormCategory("Other"); setIsRecurring(false); setEditing({}); }}
           className="px-4 py-2 rounded-2xl gradient-primary text-primary-foreground text-sm flex items-center gap-1.5">
           <Plus className="size-4" /> Add
         </button>
@@ -142,7 +163,10 @@ function TransactionsPage() {
                 {categoryMeta[t.category as Category]?.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{t.merchant}</div>
+                <div className="text-sm font-medium truncate flex items-center gap-1.5">
+                  {t.merchant}
+                  {t.recurring_id ? <span title="Recurring" className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary"><Repeat className="size-2.5" />Recurring</span> : null}
+                </div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                   <span>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
                   <span>·</span><span>{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</span>
@@ -227,6 +251,33 @@ function TransactionsPage() {
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)"
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
+                {!editing.id && (
+                  <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
+                    <label className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2"><Repeat className="size-4" /> Recurring transaction?</span>
+                      <input type="checkbox" checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} className="size-4" />
+                    </label>
+                    {isRecurring && (
+                      <div className="space-y-2">
+                        <select name="frequency" defaultValue="Monthly"
+                          className="w-full glass rounded-2xl px-4 py-2 bg-transparent outline-none text-sm">
+                          {RECURRING_FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                        </select>
+                        <div className="flex gap-2">
+                          <label className="flex-1 text-xs text-muted-foreground">
+                            Start
+                            <input name="rec_start" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
+                          </label>
+                          <label className="flex-1 text-xs text-muted-foreground">
+                            End (optional)
+                            <input name="rec_end" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
+                          </label>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Future occurrences post automatically when you next open the app.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <button type="submit" disabled={save.isPending}
                 className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
