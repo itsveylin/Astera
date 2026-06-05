@@ -31,6 +31,7 @@ function TransactionsPage() {
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
   const delCash = useDeleteCashAdjustment();
+  const saveRecurring = useSaveRecurring();
   const currency = profile?.currency ?? "INR";
 
   const [q, setQ] = useState("");
@@ -38,6 +39,7 @@ function TransactionsPage() {
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
   const [formCategory, setFormCategory] = useState<Category>("Other");
+  const [isRecurring, setIsRecurring] = useState(false);
   useBodyScrollLock(!!editing || cashOpen);
 
   const linkedInvestment = useMemo(
