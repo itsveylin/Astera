@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { Blobs } from "@/components/Blobs";
 import { useAuth } from "@/components/AuthProvider";
-import { useProfile } from "@/hooks/useFinanceData";
+import { useProfile, useRecurringRunner } from "@/hooks/useFinanceData";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
