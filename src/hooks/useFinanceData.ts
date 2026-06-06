@@ -513,3 +513,78 @@ export function useRecurringRunner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 }
+
+export function useCreditCards() {
+  const { user } = useAuth();
+  return useQuery({
+    enabled: !!user,
+    queryKey: ["credit_cards", user?.id],
+    queryFn: async (): Promise<CreditCard[]> => {
+      const { data, error } = await supabase
+        .from("credit_cards" as any)
+        .select("*")
+        .order("created_at");
+      if (error) throw error;
+      return ((data ?? []) as any[]).map((d) => ({ ...d, credit_limit: Number(d.credit_limit) }));
+    },
+  });
+}
+
+export function useSaveCreditCard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (c: Partial<CreditCard> & { id?: string }) => {
+      const uid = await getVerifiedUserId();
+      if (c.id) {
+        const { id, user_id, created_at, updated_at, ...rest } = c as any;
+        const { error } = await supabase.from("credit_cards" as any).update(rest).eq("id", id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("credit_cards" as any).insert({ ...c, user_id: uid } as any);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["credit_cards"] }),
+  });
+}
+
+export function useDeleteCreditCard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("credit_cards" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["credit_cards"] });
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+}
+
+export function usePayCreditCardBill() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { card_id: string; amount: number; payment_method?: string; note?: string | null; card_name?: string }) => {
+      const uid = await getVerifiedUserId();
+      const amt = Math.abs(vars.amount);
+      const { error } = await supabase.from("transactions").insert({
+        user_id: uid,
+        merchant: vars.card_name ? `Bill payment · ${vars.card_name}` : "Credit card bill payment",
+        amount: -amt,
+        category: "Bills",
+        subcategory: "EMI / Loan Payment",
+        payment_method: vars.payment_method ?? "Bank Transfer",
+        notes: vars.note ?? null,
+        occurred_at: new Date().toISOString(),
+        credit_card_id: vars.card_id,
+        is_cc_payment: true,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["credit_cards"] });
+    },
+  });
+}
