@@ -249,13 +249,29 @@ function TransactionsPage() {
                     </p>
                   </div>
                 )}
-                <select name="payment_method" required defaultValue={editing.payment_method ?? ""}
+                <select name="payment_method" required value={formPayment}
+                  onChange={(e) => setFormPayment(e.target.value)}
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   <option value="" disabled>Select payment method…</option>
                   {PAYMENT_METHODS.map((m) => (
                     <option key={m} value={m}>{paymentMethodMeta[m].icon} {m}</option>
                   ))}
                 </select>
+                {formPayment === "Card" && (
+                  creditCards.length === 0 ? (
+                    <div className="text-xs px-3 py-2 rounded-xl bg-destructive/15 text-destructive">
+                      No credit cards yet. Add one on the Credit Cards page first.
+                    </div>
+                  ) : (
+                    <select name="credit_card_id" required defaultValue={editing.credit_card_id ?? ""}
+                      className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                      <option value="" disabled>Select credit card…</option>
+                      {creditCards.map((c) => (
+                        <option key={c.id} value={c.id}>{c.icon || "💳"} {c.name}{c.bank ? ` · ${c.bank}` : ""}</option>
+                      ))}
+                    </select>
+                  )
+                )}
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)"
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
                 <details className="rounded-2xl bg-background/40 border border-border/60 group">
