@@ -120,32 +120,62 @@ function InvestmentsPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setEditing(null)} className="fixed inset-0 z-50 backdrop-blur-sm bg-foreground/20 grid place-items-center p-4">
             <motion.form onSubmit={submit} initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()} className="glass-strong rounded-[2rem] p-6 w-full max-w-md relative">
-              <button type="button" onClick={() => setEditing(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
-              <h3 className="font-display text-2xl mb-4">{editing.id ? "Edit holding" : "New holding"}</h3>
-              <div className="space-y-3">
-                <input name="name" required defaultValue={editing.name ?? ""} placeholder="Name (e.g. Parag Parikh Flexi Cap)" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
-                <select name="type" required defaultValue={editing.type ?? "Mutual Fund"} className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
-                  {INVESTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
+              onClick={(e) => e.stopPropagation()}
+              className="glass-strong rounded-[2rem] w-full max-w-md relative flex flex-col max-h-[90dvh] overflow-hidden">
+              <div className="flex items-center justify-between px-6 pt-6 pb-3 shrink-0">
+                <h3 className="font-display text-2xl">{editing.id ? "Edit holding" : "New holding"}</h3>
+                <button type="button" aria-label="Close" onClick={() => setEditing(null)} className="p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
+              </div>
+              <div className="px-6 pb-4 overflow-y-auto flex-1 space-y-3">
+                <label className="block text-xs text-muted-foreground">
+                  Investment name
+                  <input name="name" required defaultValue={editing.name ?? ""} placeholder="e.g. Parag Parikh Flexi Cap" className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                </label>
+                <label className="block text-xs text-muted-foreground">
+                  Investment type
+                  <select name="type" required defaultValue={editing.type ?? "Mutual Fund"} className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                    {INVESTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </label>
                 {editing.id ? (
                   <>
-                    <div className="glass rounded-2xl px-4 py-2.5 text-sm flex items-center justify-between">
+                    <div className="glass rounded-2xl px-4 py-2.5 text-sm flex items-center justify-between gap-2">
                       <span className="text-muted-foreground">Total invested</span>
                       <span className="tabular-nums font-medium">{formatMoney(editing.invested ?? 0, currency)}</span>
                     </div>
                     <p className="text-xs text-muted-foreground -mt-1">Auto-calculated from your Investment transactions. To change it, add or edit an Investment transaction.</p>
-                    <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="Current value" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    <label className="block text-xs text-muted-foreground">
+                      Current value
+                      <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="0" className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    </label>
                   </>
                 ) : (
-                  <div className="flex gap-2">
-                    <input name="invested" type="number" required min="0" step="any" defaultValue={editing.invested ?? ""} placeholder="Amount invested" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
-                    <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="Current value" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className="block text-xs text-muted-foreground min-w-0">
+                      Amount invested
+                      <input name="invested" type="number" required min="0" step="any" defaultValue={editing.invested ?? ""} placeholder="0" className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    </label>
+                    <label className="block text-xs text-muted-foreground min-w-0">
+                      Current value
+                      <input name="current_value" type="number" required min="0" step="any" defaultValue={editing.current_value ?? ""} placeholder="0" className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    </label>
                   </div>
                 )}
-                <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
+                <label className="block text-xs text-muted-foreground">
+                  Notes
+                  <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Optional" className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
+                </label>
               </div>
-              <button type="submit" disabled={save.isPending} className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">Save</button>
+              <div className="px-6 py-4 border-t border-border/60 bg-background/60 backdrop-blur shrink-0 flex gap-2">
+                <button type="button" onClick={() => setEditing(null)}
+                  className="flex-1 py-3 rounded-2xl border border-border/60 bg-background/40 text-sm font-medium hover:bg-background/60">
+                  Cancel
+                </button>
+                <button type="submit" disabled={save.isPending}
+                  className="flex-[2] py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
+                  {save.isPending ? "Saving..." : "Save holding"}
+                </button>
+              </div>
             </motion.form>
           </motion.div>
         )}
