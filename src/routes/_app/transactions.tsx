@@ -7,7 +7,7 @@ import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
-  useSaveRecurring,
+  useSaveRecurring, useCreditCards,
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
