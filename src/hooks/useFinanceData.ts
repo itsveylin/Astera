@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { advanceDate } from "@/lib/finance";
-import type { Transaction, Budget, Goal, Investment, Profile, RecurringTransaction, RecurringFrequency } from "@/lib/finance";
+import type { Transaction, Budget, Goal, Investment, Profile, RecurringTransaction, RecurringFrequency, CreditCard } from "@/lib/finance";
 
 export function useProfile() {
   const { user } = useAuth();
