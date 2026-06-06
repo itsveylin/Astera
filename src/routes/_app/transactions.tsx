@@ -173,7 +173,7 @@ function TransactionsPage() {
                   {t.payment_method ? (<><span>·</span><span>{paymentMethodMeta[t.payment_method as PaymentMethod]?.icon ?? ""} {t.payment_method}</span></>) : null}
                 </div>
               </div>
-              <div className={`text-sm font-medium tabular-nums ${t.amount > 0 ? "text-[var(--color-success)]" : ""}`}>
+              <div className={`text-sm font-medium tabular-nums ${t.amount > 0 ? "text-[var(--color-success)]" : "text-destructive"}`}>
                 {t.amount > 0 ? "+" : ""}{formatMoney(t.amount, currency)}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
