@@ -67,6 +67,11 @@ function TransactionsPage() {
     const pm = String(form.get("payment_method") || "");
     const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
+    let credit_card_id: string | null = null;
+    if (pm === "Card") {
+      credit_card_id = String(form.get("credit_card_id") || "") || null;
+      if (!credit_card_id) { toast.error("Please select which credit card was used"); return; }
+    }
     let investment: { name: string; type: string } | null = null;
     let invName = "", invType = "Mutual Fund";
     if (category === "Investments") {
@@ -85,7 +90,8 @@ function TransactionsPage() {
       await save.mutateAsync({
         id: editing.id, merchant, amount: signedAmount, category, subcategory,
         payment_method: pm, notes, occurred_at, investment,
-      });
+        credit_card_id,
+      } as any);
       // Only attach recurring on NEW transactions (avoid duplicate rules on edit).
       if (!editing.id && isRecurring) {
         const frequency = String(form.get("frequency") || "Monthly") as RecurringFrequency;
