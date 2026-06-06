@@ -185,7 +185,7 @@ function TransactionsPage() {
                 {t.amount > 0 ? "+" : ""}{formatMoney(t.amount, currency)}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                <button onClick={() => { setFormCategory((t.category as Category) ?? "Other"); setEditing(t); }} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
+                <button onClick={() => { setFormCategory((t.category as Category) ?? "Other"); setFormPayment(t.payment_method ?? ""); setEditing(t); }} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
                 <button onClick={() => { if (confirm("Delete?")) del.mutate(t.id); }} className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive"><Trash2 className="size-3.5" /></button>
               </div>
             </motion.div>
