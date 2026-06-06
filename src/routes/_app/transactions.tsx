@@ -191,10 +191,12 @@ function TransactionsPage() {
             onClick={() => setEditing(null)} className="fixed inset-0 z-50 backdrop-blur-sm bg-foreground/20 grid place-items-center p-4">
             <motion.form onSubmit={submit} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="glass-strong rounded-[2rem] p-6 w-full max-w-md relative">
-              <button type="button" onClick={() => setEditing(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
-              <h3 className="font-display text-2xl mb-4">{editing.id ? "Edit transaction" : "New transaction"}</h3>
-              <div className="space-y-3">
+              className="glass-strong rounded-[2rem] w-full max-w-md relative flex flex-col max-h-[90dvh] overflow-hidden">
+              <div className="flex items-center justify-between px-6 pt-6 pb-3 shrink-0">
+                <h3 className="font-display text-2xl">{editing.id ? "Edit transaction" : "New transaction"}</h3>
+                <button type="button" aria-label="Close" onClick={() => setEditing(null)} className="p-1.5 rounded-full hover:bg-accent/40"><X className="size-4" /></button>
+              </div>
+              <div className="px-6 pb-4 overflow-y-auto flex-1 space-y-3">
                 <input name="merchant" required defaultValue={editing.merchant ?? ""} placeholder="Merchant" className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 <div className="flex gap-2">
                   <select name="type" defaultValue={(editing.amount ?? -1) > 0 ? "income" : "expense"}
@@ -202,7 +204,7 @@ function TransactionsPage() {
                     <option value="expense">Expense</option><option value="income">Income</option>
                   </select>
                   <input name="amount" type="number" step="0.01" required defaultValue={editing.amount ? Math.abs(editing.amount) : ""}
-                    placeholder="Amount" className="flex-1 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    placeholder="Amount" className="flex-1 min-w-0 glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 </div>
                 <select name="category" required value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value as Category)}
@@ -246,11 +248,26 @@ function TransactionsPage() {
                     <option key={m} value={m}>{paymentMethodMeta[m].icon} {m}</option>
                   ))}
                 </select>
-                <input name="date" type="datetime-local"
-                  defaultValue={(editing.occurred_at ? new Date(editing.occurred_at) : new Date()).toISOString().slice(0, 16)}
-                  className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)"
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
+                <details className="rounded-2xl bg-background/40 border border-border/60 group">
+                  <summary className="cursor-pointer list-none px-4 py-2.5 text-sm flex items-center justify-between">
+                    <span className="text-muted-foreground">Advanced options</span>
+                    <span className="text-xs text-muted-foreground group-open:hidden">Date &amp; time auto-set</span>
+                  </summary>
+                  <div className="px-3 pb-3 pt-1">
+                    <label className="text-xs text-muted-foreground">
+                      Custom date &amp; time
+                      <input name="date" type="datetime-local"
+                        defaultValue={(() => {
+                          const d = editing.occurred_at ? new Date(editing.occurred_at) : new Date();
+                          const tz = d.getTimezoneOffset() * 60000;
+                          return new Date(d.getTime() - tz).toISOString().slice(0, 16);
+                        })()}
+                        className="mt-1 w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" />
+                    </label>
+                  </div>
+                </details>
                 {!editing.id && (
                   <div className="space-y-3 p-3 rounded-2xl bg-background/40 border border-border/60">
                     <label className="flex items-center justify-between text-sm">
@@ -264,11 +281,11 @@ function TransactionsPage() {
                           {RECURRING_FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
                         </select>
                         <div className="flex gap-2">
-                          <label className="flex-1 text-xs text-muted-foreground">
+                          <label className="flex-1 min-w-0 text-xs text-muted-foreground">
                             Start
                             <input name="rec_start" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
                           </label>
-                          <label className="flex-1 text-xs text-muted-foreground">
+                          <label className="flex-1 min-w-0 text-xs text-muted-foreground">
                             End (optional)
                             <input name="rec_end" type="date" className="mt-1 w-full glass rounded-2xl px-3 py-2 bg-transparent outline-none text-sm" />
                           </label>
@@ -279,10 +296,16 @@ function TransactionsPage() {
                   </div>
                 )}
               </div>
-              <button type="submit" disabled={save.isPending}
-                className="mt-5 w-full py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
-                {save.isPending ? "Saving..." : "Save"}
-              </button>
+              <div className="px-6 py-4 border-t border-border/60 bg-background/60 backdrop-blur shrink-0 flex gap-2">
+                <button type="button" onClick={() => setEditing(null)}
+                  className="flex-1 py-3 rounded-2xl border border-border/60 bg-background/40 text-sm font-medium hover:bg-background/60">
+                  Cancel
+                </button>
+                <button type="submit" disabled={save.isPending}
+                  className="flex-[2] py-3 rounded-2xl gradient-primary text-primary-foreground font-medium disabled:opacity-60">
+                  {save.isPending ? "Saving..." : "Save Transaction"}
+                </button>
+              </div>
             </motion.form>
           </motion.div>
         )}
