@@ -168,7 +168,7 @@ function TransactionsPage() {
                   {t.recurring_id ? <span title="Recurring" className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary"><Repeat className="size-2.5" />Recurring</span> : null}
                 </div>
                 <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
-                  <span>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
+                  <span title={new Date(t.occurred_at).toLocaleString()}>{new Date(t.occurred_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })} · {new Date(t.occurred_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</span>
                   <span>·</span><span>{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</span>
                   {t.payment_method ? (<><span>·</span><span>{paymentMethodMeta[t.payment_method as PaymentMethod]?.icon ?? ""} {t.payment_method}</span></>) : null}
                 </div>
