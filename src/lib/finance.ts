@@ -90,7 +90,55 @@ export interface Transaction {
   occurred_at: string;
   investment_id?: string | null;
   recurring_id?: string | null;
+  credit_card_id?: string | null;
+  is_cc_payment?: boolean | null;
 }
+
+export interface CreditCard {
+  id: string;
+  user_id: string;
+  name: string;
+  bank: string | null;
+  credit_limit: number;
+  billing_day: number | null;
+  due_day: number | null;
+  color: string | null;
+  icon: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const CARD_COLORS = [
+  "oklch(0.65 0.18 260)", "oklch(0.65 0.2 30)", "oklch(0.68 0.18 155)",
+  "oklch(0.65 0.2 320)", "oklch(0.7 0.16 60)", "oklch(0.6 0.16 220)",
+] as const;
+
+export function computeCardUsage(card: CreditCard, txns: Transaction[]) {
+  let charges = 0, payments = 0;
+  for (const t of txns) {
+    if (t.credit_card_id !== card.id) continue;
+    if (t.is_cc_payment) payments += Math.abs(t.amount);
+    else charges += Math.abs(t.amount);
+  }
+  const outstanding = Math.max(0, charges - payments);
+  const available = Math.max(0, card.credit_limit - outstanding);
+  const utilization = card.credit_limit > 0 ? (outstanding / card.credit_limit) * 100 : 0;
+  return { outstanding, available, utilization, charges, payments };
+}
+
+export function nextDueDate(day: number | null | undefined, from = new Date()): Date | null {
+  if (!day || day < 1 || day > 31) return null;
+  const d = new Date(from);
+  d.setHours(0, 0, 0, 0);
+  let next = new Date(d.getFullYear(), d.getMonth(), Math.min(day, daysInMonth(d.getFullYear(), d.getMonth())));
+  if (next < d) {
+    const m = d.getMonth() + 1;
+    next = new Date(d.getFullYear(), m, Math.min(day, daysInMonth(d.getFullYear(), m)));
+  }
+  return next;
+}
+function daysInMonth(y: number, m: number) { return new Date(y, m + 1, 0).getDate(); }
 export interface Budget { id: string; category: Category; monthly_limit: number; }
 export interface Goal {
   id: string; name: string; emoji: string;
