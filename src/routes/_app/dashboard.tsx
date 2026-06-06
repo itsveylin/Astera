@@ -139,7 +139,7 @@ function Dashboard() {
                   <div className="text-sm font-medium truncate">{t.merchant}</div>
                   <div className="text-xs text-muted-foreground">{t.category}{t.subcategory ? ` › ${t.subcategory}` : ""}</div>
                 </div>
-                <div className={`text-sm font-medium ${t.amount > 0 ? "text-[var(--color-success)]" : ""}`}>
+                <div className={`text-sm font-medium tabular-nums ${t.amount > 0 ? "text-[var(--color-success)]" : "text-destructive"}`}>
                   {t.amount > 0 ? "+" : ""}{fmt(t.amount)}
                 </div>
               </div>
