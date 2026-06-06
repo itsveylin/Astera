@@ -27,6 +27,7 @@ function TransactionsPage() {
   const { data: txns = [] } = useTransactions();
   const { data: cashAdjustments = [] } = useCashAdjustments();
   const { data: investments = [] } = useInvestments();
+  const { data: creditCards = [] } = useCreditCards();
   const save = useSaveTransaction();
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
@@ -39,6 +40,7 @@ function TransactionsPage() {
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
   const [formCategory, setFormCategory] = useState<Category>("Other");
+  const [formPayment, setFormPayment] = useState<string>("");
   const [isRecurring, setIsRecurring] = useState(false);
   useBodyScrollLock(!!editing || cashOpen);
 
