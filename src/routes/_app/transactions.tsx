@@ -7,7 +7,7 @@ import { Topbar } from "@/components/Topbar";
 import {
   useTransactions, useSaveTransaction, useDeleteTransaction, useProfile,
   useCashAdjustments, useAddCashAdjustment, useDeleteCashAdjustment, useInvestments,
-  useSaveRecurring,
+  useSaveRecurring, useCreditCards,
 } from "@/hooks/useFinanceData";
 import {
   categoryMeta, CATEGORIES, formatMoney, PAYMENT_METHODS, paymentMethodMeta, INVESTMENT_TYPES, getSubcategories,
@@ -27,6 +27,7 @@ function TransactionsPage() {
   const { data: txns = [] } = useTransactions();
   const { data: cashAdjustments = [] } = useCashAdjustments();
   const { data: investments = [] } = useInvestments();
+  const { data: creditCards = [] } = useCreditCards();
   const save = useSaveTransaction();
   const del = useDeleteTransaction();
   const addCash = useAddCashAdjustment();
@@ -39,6 +40,7 @@ function TransactionsPage() {
   const [editing, setEditing] = useState<Partial<Transaction> | null>(null);
   const [cashOpen, setCashOpen] = useState(false);
   const [formCategory, setFormCategory] = useState<Category>("Other");
+  const [formPayment, setFormPayment] = useState<string>("");
   const [isRecurring, setIsRecurring] = useState(false);
   useBodyScrollLock(!!editing || cashOpen);
 
@@ -65,6 +67,11 @@ function TransactionsPage() {
     const pm = String(form.get("payment_method") || "");
     const category = String(form.get("category")) as Category;
     if (!pm) { toast.error("Please select a payment method"); return; }
+    let credit_card_id: string | null = null;
+    if (pm === "Card") {
+      credit_card_id = String(form.get("credit_card_id") || "") || null;
+      if (!credit_card_id) { toast.error("Please select which credit card was used"); return; }
+    }
     let investment: { name: string; type: string } | null = null;
     let invName = "", invType = "Mutual Fund";
     if (category === "Investments") {
@@ -83,7 +90,8 @@ function TransactionsPage() {
       await save.mutateAsync({
         id: editing.id, merchant, amount: signedAmount, category, subcategory,
         payment_method: pm, notes, occurred_at, investment,
-      });
+        credit_card_id,
+      } as any);
       // Only attach recurring on NEW transactions (avoid duplicate rules on edit).
       if (!editing.id && isRecurring) {
         const frequency = String(form.get("frequency") || "Monthly") as RecurringFrequency;
@@ -145,7 +153,7 @@ function TransactionsPage() {
           className="px-4 py-2 rounded-2xl bg-background/40 hover:bg-background/60 text-sm flex items-center gap-1.5 border border-border/60">
           <Banknote className="size-4" /> Cash: <span className="tabular-nums font-medium">{formatMoney(cashInHand, currency)}</span>
         </button>
-        <button onClick={() => { setFormCategory("Other"); setIsRecurring(false); setEditing({}); }}
+        <button onClick={() => { setFormCategory("Other"); setFormPayment(""); setIsRecurring(false); setEditing({}); }}
           className="px-4 py-2 rounded-2xl gradient-primary text-primary-foreground text-sm flex items-center gap-1.5">
           <Plus className="size-4" /> Add
         </button>
@@ -177,7 +185,7 @@ function TransactionsPage() {
                 {t.amount > 0 ? "+" : ""}{formatMoney(t.amount, currency)}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                <button onClick={() => { setFormCategory((t.category as Category) ?? "Other"); setEditing(t); }} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
+                <button onClick={() => { setFormCategory((t.category as Category) ?? "Other"); setFormPayment(t.payment_method ?? ""); setEditing(t); }} className="p-1.5 rounded-lg hover:bg-accent/40"><Pencil className="size-3.5" /></button>
                 <button onClick={() => { if (confirm("Delete?")) del.mutate(t.id); }} className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive"><Trash2 className="size-3.5" /></button>
               </div>
             </motion.div>
@@ -241,13 +249,29 @@ function TransactionsPage() {
                     </p>
                   </div>
                 )}
-                <select name="payment_method" required defaultValue={editing.payment_method ?? ""}
+                <select name="payment_method" required value={formPayment}
+                  onChange={(e) => setFormPayment(e.target.value)}
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
                   <option value="" disabled>Select payment method…</option>
                   {PAYMENT_METHODS.map((m) => (
                     <option key={m} value={m}>{paymentMethodMeta[m].icon} {m}</option>
                   ))}
                 </select>
+                {formPayment === "Card" && (
+                  creditCards.length === 0 ? (
+                    <div className="text-xs px-3 py-2 rounded-xl bg-destructive/15 text-destructive">
+                      No credit cards yet. Add one on the Credit Cards page first.
+                    </div>
+                  ) : (
+                    <select name="credit_card_id" required defaultValue={editing.credit_card_id ?? ""}
+                      className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm">
+                      <option value="" disabled>Select credit card…</option>
+                      {creditCards.map((c) => (
+                        <option key={c.id} value={c.id}>{c.icon || "💳"} {c.name}{c.bank ? ` · ${c.bank}` : ""}</option>
+                      ))}
+                    </select>
+                  )
+                )}
                 <textarea name="notes" defaultValue={editing.notes ?? ""} placeholder="Notes (optional)"
                   className="w-full glass rounded-2xl px-4 py-2.5 bg-transparent outline-none text-sm" rows={2} />
                 <details className="rounded-2xl bg-background/40 border border-border/60 group">

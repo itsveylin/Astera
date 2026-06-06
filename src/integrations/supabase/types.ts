@@ -62,6 +62,51 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_cards: {
+        Row: {
+          bank: string | null
+          billing_day: number | null
+          color: string | null
+          created_at: string
+          credit_limit: number
+          due_day: number | null
+          icon: string | null
+          id: string
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bank?: string | null
+          billing_day?: number | null
+          color?: string | null
+          created_at?: string
+          credit_limit?: number
+          due_day?: number | null
+          icon?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bank?: string | null
+          billing_day?: number | null
+          color?: string | null
+          created_at?: string
+          credit_limit?: number
+          due_day?: number | null
+          icon?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goal_contributions: {
         Row: {
           amount: number
@@ -267,8 +312,10 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          credit_card_id: string | null
           id: string
           investment_id: string | null
+          is_cc_payment: boolean
           merchant: string
           notes: string | null
           occurred_at: string
@@ -281,8 +328,10 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          credit_card_id?: string | null
           id?: string
           investment_id?: string | null
+          is_cc_payment?: boolean
           merchant: string
           notes?: string | null
           occurred_at?: string
@@ -295,8 +344,10 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          credit_card_id?: string | null
           id?: string
           investment_id?: string | null
+          is_cc_payment?: boolean
           merchant?: string
           notes?: string | null
           occurred_at?: string

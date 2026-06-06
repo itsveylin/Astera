@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Receipt, BarChart3, Wallet, Target, TrendingUp,
-  RefreshCw, FileText, Settings, Gem, LogOut, Repeat,
+  RefreshCw, FileText, Settings, Gem, LogOut, Repeat, CreditCard,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -13,6 +13,7 @@ const items = [
   { to: "/budgets", label: "Budgets", icon: Wallet },
   { to: "/goals", label: "Goals", icon: Target },
   { to: "/investments", label: "Investments", icon: TrendingUp },
+  { to: "/credit-cards", label: "Credit Cards", icon: CreditCard },
   { to: "/subscriptions", label: "Subscriptions", icon: RefreshCw },
   { to: "/report", label: "Year Report", icon: FileText },
   { to: "/settings", label: "Settings", icon: Settings },
