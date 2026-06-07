@@ -9,7 +9,7 @@ import { useProfile, useUpdateProfile, useSaveBudget, useSaveGoal } from "@/hook
 import { CATEGORIES, type Category } from "@/lib/finance";
 
 export const Route = createFileRoute("/onboarding")({
-  head: () => ({ meta: [{ title: "Welcome — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Welcome — Astera" }] }),
   component: Onboarding,
 });
 
@@ -60,7 +60,7 @@ function Onboarding() {
           name: "Savings goal", emoji: "🎯", target: Number(savingsGoal) * 12, saved: 0,
         });
       }
-      toast.success("All set. Welcome to Lumen ✨");
+      toast.success("All set. Welcome to Astera ✨");
       nav({ to: "/dashboard" });
     } catch (e: any) {
       toast.error(e.message);
@@ -150,7 +150,7 @@ function Onboarding() {
             onClick={() => (last ? finish() : setStep((s) => s + 1))}
             disabled={busy}
             className="px-6 py-3 rounded-2xl gradient-primary text-primary-foreground font-medium inline-flex items-center gap-2 shadow-[var(--shadow-soft)] disabled:opacity-60">
-            {last ? (busy ? "Setting up..." : "Enter Lumen") : "Continue"} <ArrowRight className="size-4" />
+            {last ? (busy ? "Setting up..." : "Enter Astera") : "Continue"} <ArrowRight className="size-4" />
           </button>
         </div>
       </motion.div>
