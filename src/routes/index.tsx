@@ -19,9 +19,9 @@ const formatINR = (n: number) => formatMoney(n, "INR");
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lumen — Your money deserves clarity, not chaos." },
-      { name: "description", content: "Lumen is an AI-powered personal finance studio. Calm dashboards, smart insights, and effortless control of your money." },
-      { property: "og:title", content: "Lumen — Personal finance, beautifully clear." },
+      { title: "Astera — Your money deserves clarity, not chaos." },
+      { name: "description", content: "Astera is an AI-powered personal finance studio. Calm dashboards, smart insights, and effortless control of your money." },
+      { property: "og:title", content: "Astera — Personal finance, beautifully clear." },
       { property: "og:description", content: "AI-powered finance studio. Track, budget, invest, save — without the anxiety." },
     ],
   }),
@@ -45,7 +45,7 @@ function Landing() {
             <div className="size-8 rounded-xl gradient-primary grid place-items-center">
               <Sparkles className="size-4 text-primary-foreground" />
             </div>
-            <span className="font-display text-2xl">Lumen</span>
+            <span className="font-display text-2xl">Astera</span>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition">Features</a>
@@ -73,7 +73,7 @@ function Landing() {
               Your money deserves <span className="gradient-text">clarity</span>, not chaos.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-              Lumen turns scattered spending into calm, beautiful insight. Budgets that breathe.
+              Astera turns scattered spending into calm, beautiful insight. Budgets that breathe.
               Goals that feel reachable. An AI that quietly helps you save.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -158,7 +158,7 @@ function Landing() {
             <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Quietly intelligent</div>
             <h2 className="font-display text-4xl md:text-5xl">An AI that whispers, never shouts.</h2>
             <p className="mt-4 text-muted-foreground max-w-lg">
-              Lumen notices the small things — the subscription you forgot, the spending creep on weekends,
+              Astera notices the small things — the subscription you forgot, the spending creep on weekends,
               the day you finally hit your savings streak. Then it tells you, kindly.
             </p>
             <div className="mt-6 space-y-3">
@@ -187,7 +187,7 @@ function Landing() {
         <div className="grid md:grid-cols-3 gap-6">
           {[
             { n: "Aanya R.", r: "Designer", q: "First finance app that doesn't make me anxious. The pastel graphs are addictive." },
-            { n: "Kabir S.", r: "Founder", q: "Lumen's AI caught two recurring charges I'd forgotten about. Paid for itself in a week." },
+            { n: "Kabir S.", r: "Founder", q: "Astera's AI caught two recurring charges I'd forgotten about. Paid for itself in a week." },
             { n: "Mira T.", r: "Doctor", q: "The year-end report made me cry, in a good way. I finally understand my money." },
           ].map((t, i) => (
             <div key={i} className="glass rounded-3xl p-6">
@@ -206,13 +206,13 @@ function Landing() {
           <h2 className="font-display text-4xl md:text-6xl relative">Start the calmest money habit of your life.</h2>
           <p className="mt-4 text-muted-foreground relative">Free forever for personal use. Three minutes to set up.</p>
           <Link to="/dashboard" className="mt-8 inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl gradient-primary text-primary-foreground font-medium shadow-[var(--shadow-elegant)] relative">
-            Open Lumen <ArrowRight className="size-4" />
+            Open Astera <ArrowRight className="size-4" />
           </Link>
         </div>
       </section>
 
       <footer className="max-w-7xl mx-auto px-6 py-12 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-4 border-t border-border/50">
-        <div className="flex items-center gap-2"><Sparkles className="size-4" /> Lumen © 2026</div>
+        <div className="flex items-center gap-2"><Sparkles className="size-4" /> Astera © 2026</div>
         <div className="flex gap-5"><a>Privacy</a><a>Terms</a><a>Press</a><a>Careers</a></div>
       </footer>
     </div>
