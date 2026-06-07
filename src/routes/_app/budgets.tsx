@@ -9,7 +9,7 @@ import { CATEGORIES, categoryMeta, formatMoney, type Category, type Budget } fro
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/budgets")({
-  head: () => ({ meta: [{ title: "Budgets — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Budgets — Astera" }] }),
   component: BudgetsPage,
 });
 

@@ -9,7 +9,7 @@ import { useTransactions, useProfile, useInvestments, useGoals, useCashAdjustmen
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — Astera" }] }),
   component: Dashboard,
 });
 
@@ -74,7 +74,7 @@ function Dashboard() {
         <div className="glass-strong rounded-[2rem] p-10 text-center max-w-xl mx-auto mt-12">
           <div className="text-5xl mb-4">✨</div>
           <h2 className="font-display text-3xl mb-2">Add your first transaction</h2>
-          <p className="text-muted-foreground mb-6">Lumen comes alive once you start logging your spending. It only takes a moment.</p>
+          <p className="text-muted-foreground mb-6">Astera comes alive once you start logging your spending. It only takes a moment.</p>
           <Link to="/transactions" className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl gradient-primary text-primary-foreground shadow-[var(--shadow-elegant)]">
             <Plus className="size-4" /> Add transaction
           </Link>

@@ -10,7 +10,7 @@ import { formatMoney, INVESTMENT_TYPES, type Investment } from "@/lib/finance";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/investments")({
-  head: () => ({ meta: [{ title: "Investments — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Investments — Astera" }] }),
   component: InvestmentsPage,
 });
 

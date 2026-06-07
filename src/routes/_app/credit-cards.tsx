@@ -15,7 +15,7 @@ import {
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/credit-cards")({
-  head: () => ({ meta: [{ title: "Credit Cards — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Credit Cards — Astera" }] }),
   component: CreditCardsPage,
 });
 

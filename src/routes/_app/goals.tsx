@@ -12,7 +12,7 @@ import { formatMoney, type Goal } from "@/lib/finance";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/goals")({
-  head: () => ({ meta: [{ title: "Goals — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Goals — Astera" }] }),
   component: GoalsPage,
 });
 
