@@ -10,7 +10,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const stored = (localStorage.getItem("lumen-theme") as Theme | null);
+    const stored = (localStorage.getItem("Astera-theme") as Theme | null);
     const initial: Theme = stored ?? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
     setThemeState(initial);
   }, []);
@@ -23,7 +23,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    if (typeof window !== "undefined") localStorage.setItem("lumen-theme", t);
+    if (typeof window !== "undefined") localStorage.setItem("Astera-theme", t);
   };
   const toggle = () => setTheme(theme === "dark" ? "light" : "dark");
 

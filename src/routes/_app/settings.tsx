@@ -225,7 +225,7 @@ function SettingsPage() {
       exported_at: new Date().toISOString(),
       profile, transactions: txns, budgets, goals, investments,
     };
-    downloadFile(`lumen-export-${Date.now()}.json`,
+    downloadFile(`Astera-export-${Date.now()}.json`,
       new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
     toast.success("Export ready");
   };
@@ -251,7 +251,7 @@ function SettingsPage() {
       ["name", "type", "invested", "current_value", "notes"],
       ...investments.map((i) => [i.name, i.type, i.invested, i.current_value, i.notes ?? ""]),
     ]));
-    downloadFile(`lumen-export-${Date.now()}.csv`,
+    downloadFile(`Astera-export-${Date.now()}.csv`,
       new Blob([sections.join("\n")], { type: "text/csv" }));
     toast.success("Export ready");
   };
