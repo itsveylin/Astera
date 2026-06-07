@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { AlertTriangle, Calendar, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_app/subscriptions")({
-  head: () => ({ meta: [{ title: "Subscriptions — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Subscriptions — Astera" }] }),
   component: Subs,
 });
 

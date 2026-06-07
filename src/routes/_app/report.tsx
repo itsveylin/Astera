@@ -8,7 +8,7 @@ import { formatMoney } from "@/lib/finance";
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/_app/report")({
-  head: () => ({ meta: [{ title: "Year Report — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Year Report — Astera" }] }),
   component: Report,
 });
 
