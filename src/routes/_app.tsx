@@ -29,7 +29,7 @@ function AppLayout() {
     return (
       <div className="min-h-screen grid place-items-center">
         <Blobs />
-        <div className="font-display text-3xl gradient-text animate-pulse">Lumen</div>
+        <div className="font-display text-3xl gradient-text animate-pulse">Astera</div>
       </div>
     );
   }
