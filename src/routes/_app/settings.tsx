@@ -20,7 +20,7 @@ import { wipeFinancialData, deleteAccount } from "@/lib/account.functions";
 import { formatMoney } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/settings")({
-  head: () => ({ meta: [{ title: "Settings — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Settings — Astera" }] }),
   component: SettingsPage,
 });
 
@@ -225,7 +225,7 @@ function SettingsPage() {
       exported_at: new Date().toISOString(),
       profile, transactions: txns, budgets, goals, investments,
     };
-    downloadFile(`lumen-export-${Date.now()}.json`,
+    downloadFile(`Astera-export-${Date.now()}.json`,
       new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
     toast.success("Export ready");
   };
@@ -251,7 +251,7 @@ function SettingsPage() {
       ["name", "type", "invested", "current_value", "notes"],
       ...investments.map((i) => [i.name, i.type, i.invested, i.current_value, i.notes ?? ""]),
     ]));
-    downloadFile(`lumen-export-${Date.now()}.csv`,
+    downloadFile(`Astera-export-${Date.now()}.csv`,
       new Blob([sections.join("\n")], { type: "text/csv" }));
     toast.success("Export ready");
   };
@@ -286,7 +286,7 @@ function SettingsPage() {
 
       <div className="grid gap-5 max-w-4xl">
         {/* PROFILE */}
-        <Section icon={User} title="Profile" description="How you appear in Lumen.">
+        <Section icon={User} title="Profile" description="How you appear in Astera.">
           <div className="flex items-center gap-5 mb-6">
             <div className="relative">
               <div className="size-20 rounded-3xl overflow-hidden gradient-accent grid place-items-center text-2xl font-display text-primary-foreground">
@@ -343,7 +343,7 @@ function SettingsPage() {
             <Field label="Monthly savings goal" hint="What you aim to set aside each month.">
               <input type="number" min={0} className={inputCls} value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="0" />
             </Field>
-            <Field label="Preferred currency" hint="Used across all of Lumen.">
+            <Field label="Preferred currency" hint="Used across all of Astera.">
               <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={inputCls}>
                 {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
               </select>
@@ -358,7 +358,7 @@ function SettingsPage() {
         </Section>
 
         {/* FINANCIAL OVERVIEW */}
-        <Section icon={TrendingUp} title="Financial overview" description="A snapshot of everything tracked in Lumen.">
+        <Section icon={TrendingUp} title="Financial overview" description="A snapshot of everything tracked in Astera.">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <MiniStat icon={Receipt} label="Transactions" value={txns.length} />
             <MiniStat icon={Wallet} label="Active budgets" value={budgets.length} />

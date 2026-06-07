@@ -28,7 +28,7 @@ export function AppSidebar() {
         <div className="size-9 rounded-2xl gradient-primary grid place-items-center shadow-[var(--shadow-elegant)]">
           <Gem className="size-5 text-primary-foreground" />
         </div>
-        <div className="font-display text-2xl">Lumen</div>
+        <div className="font-display text-2xl">Astera</div>
       </Link>
       <nav className="glass rounded-3xl p-2 flex-1 flex flex-col gap-1">
         {items.map(({ to, label, icon: Icon }) => {

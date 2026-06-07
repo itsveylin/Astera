@@ -55,12 +55,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lumen — Your money deserves clarity, not chaos." },
-      { name: "description", content: "Lumen is a premium personal finance studio. Calm dashboards, real control of your money." },
-      { property: "og:title", content: "Lumen — Your money deserves clarity, not chaos." },
-      { name: "twitter:title", content: "Lumen — Your money deserves clarity, not chaos." },
-      { property: "og:description", content: "Lumen is a premium personal finance studio. Calm dashboards, real control of your money." },
-      { name: "twitter:description", content: "Lumen is a premium personal finance studio. Calm dashboards, real control of your money." },
+      { title: "Astera — Your money deserves clarity, not chaos." },
+      { name: "description", content: "Astera is a premium personal finance studio. Calm dashboards, real control of your money." },
+      { property: "og:title", content: "Astera — Your money deserves clarity, not chaos." },
+      { name: "twitter:title", content: "Astera — Your money deserves clarity, not chaos." },
+      { property: "og:description", content: "Astera is a premium personal finance studio. Calm dashboards, real control of your money." },
+      { name: "twitter:description", content: "Astera is a premium personal finance studio. Calm dashboards, real control of your money." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8a27ec76-f193-46b0-93f9-a634b4aa5e7e/id-preview-8a05584b--8e00c8b7-3091-4dff-afed-ae2a4d01eef2.lovable.app-1780227018663.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8a27ec76-f193-46b0-93f9-a634b4aa5e7e/id-preview-8a05584b--8e00c8b7-3091-4dff-afed-ae2a4d01eef2.lovable.app-1780227018663.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -86,7 +86,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('lumen-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.style.colorScheme=t;}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('Astera-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.style.colorScheme=t;}catch(e){}})();`,
           }}
         />
       </head>

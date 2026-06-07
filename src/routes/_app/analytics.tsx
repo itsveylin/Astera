@@ -6,7 +6,7 @@ import { useTransactions, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, PAYMENT_METHODS, paymentMethodMeta, type PaymentMethod } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Analytics — Astera" }] }),
   component: Analytics,
 });
 

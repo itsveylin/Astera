@@ -10,7 +10,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Astera" }] }),
   component: Auth,
 });
 
@@ -37,7 +37,7 @@ function Auth() {
           options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: name } },
         });
         if (error) throw error;
-        toast.success("Welcome to Lumen ✨");
+        toast.success("Welcome to Astera ✨");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -70,7 +70,7 @@ function Auth() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-10">
             <div className="size-10 rounded-2xl gradient-primary grid place-items-center"><Sparkles className="size-5 text-primary-foreground" /></div>
-            <span className="font-display text-3xl">Lumen</span>
+            <span className="font-display text-3xl">Astera</span>
           </Link>
           <h2 className="font-display text-5xl leading-tight">Money, but make it <span className="gradient-text">peaceful</span>.</h2>
           <p className="mt-4 text-muted-foreground">A calmer way to track, budget, and grow what you have.</p>

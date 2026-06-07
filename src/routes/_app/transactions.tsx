@@ -18,7 +18,7 @@ import {
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
-  head: () => ({ meta: [{ title: "Transactions — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Transactions — Astera" }] }),
   component: TransactionsPage,
 });
 
