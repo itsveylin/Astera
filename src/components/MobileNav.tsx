@@ -6,7 +6,7 @@ const items = [
   { to: "/transactions", label: "Txns", icon: Receipt },
   { to: "/analytics", label: "Stats", icon: BarChart3 },
   { to: "/goals", label: "Goals", icon: Target },
-  { to: "/settings", label: "Settings", icon: Settings },
+ { to: "/settings", label: "More", icon: Settings },
 ];
 
 export function MobileNav() {
