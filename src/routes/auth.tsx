@@ -10,7 +10,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — Lumen" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Astera" }] }),
   component: Auth,
 });
 
