@@ -368,7 +368,7 @@ function SettingsPage() {
           </div>
         </Section>
 
-        {/* APPEARANCE */}
+        {/* APPEARANCE of the app in the mobile version  */}
         <Section icon={theme === "dark" ? Moon : Sun} title="Appearance" description="Theme preference syncs across the app.">
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setTheme("light")}
