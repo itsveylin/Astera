@@ -223,8 +223,7 @@ export async function parseFile(file: File): Promise<ParsedRow[]> {
 
 async function parsePDF(file: File): Promise<ParsedRow[]> {
   const pdfjs: any = await import("pdfjs-dist");
-  // @ts-expect-error worker url
-  const worker = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+  const worker = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url" as any)).default;
   pdfjs.GlobalWorkerOptions.workerSrc = worker;
   const data = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data }).promise;
