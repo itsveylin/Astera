@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const USER_DATA_TABLES = [
+  "imported_transactions",
+  "import_jobs",
   "transactions",
   "budgets",
   "goal_contributions",
