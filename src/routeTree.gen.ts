@@ -19,6 +19,7 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppReportRouteImport } from './routes/_app/report'
 import { Route as AppRecurringRouteImport } from './routes/_app/recurring'
 import { Route as AppInvestmentsRouteImport } from './routes/_app/investments'
+import { Route as AppImportRouteImport } from './routes/_app/import'
 import { Route as AppGoalsRouteImport } from './routes/_app/goals'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCreditCardsRouteImport } from './routes/_app/credit-cards'
@@ -74,6 +75,11 @@ const AppInvestmentsRoute = AppInvestmentsRouteImport.update({
   path: '/investments',
   getParentRoute: () => AppRoute,
 } as any)
+const AppImportRoute = AppImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGoalsRoute = AppGoalsRouteImport.update({
   id: '/goals',
   path: '/goals',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/credit-cards': typeof AppCreditCardsRoute
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
+  '/import': typeof AppImportRoute
   '/investments': typeof AppInvestmentsRoute
   '/recurring': typeof AppRecurringRoute
   '/report': typeof AppReportRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/credit-cards': typeof AppCreditCardsRoute
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
+  '/import': typeof AppImportRoute
   '/investments': typeof AppInvestmentsRoute
   '/recurring': typeof AppRecurringRoute
   '/report': typeof AppReportRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/_app/credit-cards': typeof AppCreditCardsRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/goals': typeof AppGoalsRoute
+  '/_app/import': typeof AppImportRoute
   '/_app/investments': typeof AppInvestmentsRoute
   '/_app/recurring': typeof AppRecurringRoute
   '/_app/report': typeof AppReportRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/credit-cards'
     | '/dashboard'
     | '/goals'
+    | '/import'
     | '/investments'
     | '/recurring'
     | '/report'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/credit-cards'
     | '/dashboard'
     | '/goals'
+    | '/import'
     | '/investments'
     | '/recurring'
     | '/report'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/_app/credit-cards'
     | '/_app/dashboard'
     | '/_app/goals'
+    | '/_app/import'
     | '/_app/investments'
     | '/_app/recurring'
     | '/_app/report'
@@ -281,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInvestmentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/import': {
+      id: '/_app/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AppImportRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/goals': {
       id: '/_app/goals'
       path: '/goals'
@@ -325,6 +344,7 @@ interface AppRouteChildren {
   AppCreditCardsRoute: typeof AppCreditCardsRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppGoalsRoute: typeof AppGoalsRoute
+  AppImportRoute: typeof AppImportRoute
   AppInvestmentsRoute: typeof AppInvestmentsRoute
   AppRecurringRoute: typeof AppRecurringRoute
   AppReportRoute: typeof AppReportRoute
@@ -339,6 +359,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCreditCardsRoute: AppCreditCardsRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppGoalsRoute: AppGoalsRoute,
+  AppImportRoute: AppImportRoute,
   AppInvestmentsRoute: AppInvestmentsRoute,
   AppRecurringRoute: AppRecurringRoute,
   AppReportRoute: AppReportRoute,

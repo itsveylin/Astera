@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const USER_DATA_TABLES = [
+  "imported_transactions",
+  "import_jobs",
   "transactions",
   "budgets",
   "goal_contributions",
@@ -18,7 +20,7 @@ export const wipeFinancialData = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { userId } = context;
     for (const t of USER_DATA_TABLES) {
-      const { error } = await supabaseAdmin.from(t).delete().eq("user_id", userId);
+      const { error } = await (supabaseAdmin.from(t as any) as any).delete().eq("user_id", userId);
       if (error) throw new Error(`${t}: ${error.message}`);
     }
     return { ok: true };
@@ -29,7 +31,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { userId } = context;
     for (const t of USER_DATA_TABLES) {
-      const { error } = await supabaseAdmin.from(t).delete().eq("user_id", userId);
+      const { error } = await (supabaseAdmin.from(t as any) as any).delete().eq("user_id", userId);
       if (error) throw new Error(`${t}: ${error.message}`);
     }
     await supabaseAdmin.from("profiles").delete().eq("id", userId);

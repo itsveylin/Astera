@@ -175,6 +175,110 @@ export type Database = {
         }
         Relationships: []
       }
+      import_jobs: {
+        Row: {
+          created_at: string
+          filename: string | null
+          id: string
+          notes: string | null
+          row_count: number
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filename?: string | null
+          id?: string
+          notes?: string | null
+          row_count?: number
+          source: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filename?: string | null
+          id?: string
+          notes?: string | null
+          row_count?: number
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      imported_transactions: {
+        Row: {
+          balance: number | null
+          category: string | null
+          confidence: number
+          created_at: string
+          credit: number | null
+          debit: number | null
+          dedupe_hash: string
+          description: string
+          id: string
+          import_job_id: string
+          occurred_at: string
+          payment_method: string | null
+          raw_text: string | null
+          status: string
+          subcategory: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          category?: string | null
+          confidence?: number
+          created_at?: string
+          credit?: number | null
+          debit?: number | null
+          dedupe_hash: string
+          description: string
+          id?: string
+          import_job_id: string
+          occurred_at: string
+          payment_method?: string | null
+          raw_text?: string | null
+          status?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          category?: string | null
+          confidence?: number
+          created_at?: string
+          credit?: number | null
+          debit?: number | null
+          dedupe_hash?: string
+          description?: string
+          id?: string
+          import_job_id?: string
+          occurred_at?: string
+          payment_method?: string | null
+          raw_text?: string | null
+          status?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imported_transactions_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "import_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investments: {
         Row: {
           created_at: string
@@ -357,6 +461,20 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_investment_id_fkey"
+            columns: ["investment_id"]
+            isOneToOne: false
+            referencedRelation: "investments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_recurring_id_fkey"
             columns: ["recurring_id"]
