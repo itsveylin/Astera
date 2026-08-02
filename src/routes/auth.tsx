@@ -29,7 +29,7 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const nav = useNavigate();
+  
   const { session } = useAuth();
   const { next } = Route.useSearch();
   const returnTo = next ?? "/dashboard";
@@ -45,7 +45,7 @@ function Auth() {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email, password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: name } },
+          options: { emailRedirectTo: window.location.origin + returnTo, data: { display_name: name } },
         });
         if (error) throw error;
         toast.success("Welcome to Astera ✨");
@@ -65,7 +65,7 @@ function Auth() {
     setBusy(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/dashboard",
+        redirect_uri: window.location.origin + returnTo,
       });
       if (result.error) toast.error("Google sign-in failed");
     } finally {
