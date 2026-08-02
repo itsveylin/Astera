@@ -9,8 +9,17 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/components/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+function safePath(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  if (!value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Astera" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: safePath(s.next) ?? safePath(s.redirect),
+  }),
   component: Auth,
 });
 
@@ -22,10 +31,12 @@ function Auth() {
   const [busy, setBusy] = useState(false);
   const nav = useNavigate();
   const { session } = useAuth();
+  const { next } = Route.useSearch();
+  const returnTo = next ?? "/dashboard";
 
   useEffect(() => {
-    if (session) nav({ to: "/dashboard" });
-  }, [session, nav]);
+    if (session) window.location.replace(returnTo);
+  }, [session, returnTo]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
