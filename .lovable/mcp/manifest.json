@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://zwbivkxtnccingttkudb.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "aura-finance",
+      "version": "0.1.0",
+      "title": "Aura Finance"
+    },
+    "tools": [
+      {
+        "name": "financial_summary",
+        "title": "Financial summary",
+        "description": "Summarize the signed-in user's income, expenses, net flow, top spending categories, and portfolio value for a given month.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "month": {
+              "description": "Month as YYYY-MM. Defaults to the current month.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_transactions",
+        "title": "List transactions",
+        "description": "List the signed-in user's transactions, newest first. Positive amounts are income, negative amounts are expenses.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 25,
+              "description": "How many transactions to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "category": {
+              "description": "Filter by exact category name, e.g. 'Food'.",
+              "type": "string"
+            },
+            "since": {
+              "description": "Only transactions on or after this ISO date (YYYY-MM-DD).",
+              "type": "string"
+            },
+            "until": {
+              "description": "Only transactions on or before this ISO date (YYYY-MM-DD).",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_transaction",
+        "title": "Create transaction",
+        "description": "Record a new transaction for the signed-in user. Use a positive amount for income and a negative amount for an expense.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "merchant": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Merchant or description, e.g. 'Blue Tokai'."
+            },
+            "amount": {
+              "type": "number",
+              "description": "Positive for income, negative for an expense."
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Category name, e.g. 'Food', 'Bills', 'Income'."
+            },
+            "subcategory": {
+              "description": "Optional subcategory, e.g. 'Electricity'.",
+              "type": "string"
+            },
+            "payment_method": {
+              "default": "UPI",
+              "description": "How the money moved.",
+              "type": "string",
+              "enum": [
+                "Cash",
+                "UPI",
+                "Card",
+                "Bank Transfer",
+                "Other"
+              ]
+            },
+            "occurred_at": {
+              "description": "ISO timestamp; defaults to now.",
+              "type": "string"
+            },
+            "notes": {
+              "description": "Optional note.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "merchant",
+            "amount",
+            "category"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_budgets",
+        "title": "List budgets",
+        "description": "List the signed-in user's monthly category budgets with spending so far this month.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_goals",
+        "title": "List savings goals",
+        "description": "List the signed-in user's savings goals with target, saved amount, and progress.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "contribute_to_goal",
+        "title": "Add or withdraw goal money",
+        "description": "Record a contribution to a savings goal. Use a negative amount to withdraw. The goal's saved total updates automatically.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "goal_id": {
+              "type": "string",
+              "description": "Goal id from list_goals."
+            },
+            "amount": {
+              "type": "number",
+              "description": "Positive to contribute, negative to withdraw."
+            },
+            "note": {
+              "description": "Optional note.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "goal_id",
+            "amount"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_investments",
+        "title": "List investments",
+        "description": "List the signed-in user's investments with invested amount, current value, and profit or loss.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

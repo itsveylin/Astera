@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Sparkles, Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
@@ -9,8 +9,17 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/components/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+function safePath(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  if (!value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Astera" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: safePath(s.next) ?? safePath(s.redirect),
+  }),
   component: Auth,
 });
 
@@ -20,12 +29,14 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const nav = useNavigate();
+  
   const { session } = useAuth();
+  const { next } = Route.useSearch();
+  const returnTo = next ?? "/dashboard";
 
   useEffect(() => {
-    if (session) nav({ to: "/dashboard" });
-  }, [session, nav]);
+    if (session) window.location.replace(returnTo);
+  }, [session, returnTo]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +45,7 @@ function Auth() {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email, password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: name } },
+          options: { emailRedirectTo: window.location.origin + returnTo, data: { display_name: name } },
         });
         if (error) throw error;
         toast.success("Welcome to Astera ✨");
@@ -54,7 +65,7 @@ function Auth() {
     setBusy(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/dashboard",
+        redirect_uri: window.location.origin + returnTo,
       });
       if (result.error) toast.error("Google sign-in failed");
     } finally {
