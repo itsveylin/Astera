@@ -69,7 +69,7 @@ export function MobileNav() {
             ))}
           </nav>
           <div className="mobile-more-footer shrink-0 border-t border-border px-4 pt-3">
-            <Button variant="ghost" className="min-h-12 w-full justify-start rounded-2xl text-muted-foreground" onClick={async () => { setOpen(false); await signOut(); }}><LogOut /> Sign out</Button>
+            <Button variant="ghost" className="min-h-12 w-full justify-start rounded-2xl bg-transparent text-muted-foreground" onClick={async () => { setOpen(false); await signOut(); }}><LogOut /> Sign out</Button>
           </div>
         </SheetContent>
       </Sheet>
