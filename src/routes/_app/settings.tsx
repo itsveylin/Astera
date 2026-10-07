@@ -33,17 +33,18 @@ const CURRENCIES = [
 ];
 
 function Section({
-  icon: Icon, title, description, children, tone = "default",
+  icon: Icon, title, description, children, tone = "default", id,
 }: {
   icon: any; title: string; description?: string; children: React.ReactNode;
-  tone?: "default" | "danger";
+  tone?: "default" | "danger"; id?: string;
 }) {
   const ring = tone === "danger" ? "ring-1 ring-destructive/30" : "";
   return (
     <motion.section
+      id={id}
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 24 }}
-      className={`glass rounded-3xl p-6 md:p-7 ${ring}`}
+      className={`glass rounded-3xl p-4 sm:p-6 md:p-7 scroll-mt-6 ${ring}`}
     >
       <header className="flex items-start gap-3 mb-5">
         <div className={`size-10 rounded-2xl grid place-items-center shrink-0 ${
@@ -79,10 +80,10 @@ const inputCls =
 function MiniStat({ icon: Icon, label, value }: { icon: any; label: string; value: string | number }) {
   return (
     <div className="glass rounded-2xl p-4">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider break-words">
         <Icon className="size-3.5" /> {label}
       </div>
-      <div className="font-display text-2xl mt-1.5">{value}</div>
+      <div className="font-display text-2xl mt-1.5 break-words">{value}</div>
     </div>
   );
 }
@@ -286,7 +287,7 @@ function SettingsPage() {
 
       <div className="grid gap-5 max-w-4xl">
         {/* PROFILE */}
-        <Section icon={User} title="Profile" description="How you appear in Astera.">
+        <Section id="profile" icon={User} title="Profile" description="How you appear in Astera.">
           <div className="flex items-center gap-5 mb-6">
             <div className="relative">
               <div className="size-20 rounded-3xl overflow-hidden gradient-accent grid place-items-center text-2xl font-display text-primary-foreground">
@@ -302,7 +303,7 @@ function SettingsPage() {
             <div className="min-w-0 flex-1">
               <div className="font-display text-xl truncate">{name || "Unnamed"}</div>
               <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
-                <Mail className="size-3" /> {user?.email}
+                <Mail className="size-3 shrink-0" /> <span className="break-all">{user?.email}</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span className="text-[11px] glass rounded-full px-2 py-0.5 flex items-center gap-1">
@@ -387,7 +388,7 @@ function SettingsPage() {
         </Section>
 
         {/* DATA MANAGEMENT */}
-        <Section icon={Database} title="Data management" description="Download a copy of everything in your vault.">
+        <Section id="data-export" icon={Database} title="Data management" description="Download a copy of everything in your vault.">
           <div className="grid sm:grid-cols-2 gap-3">
             <button onClick={exportCsv}
               className="p-4 rounded-2xl glass text-left flex items-start gap-3 hover:ring-1 hover:ring-border transition">
@@ -409,7 +410,7 @@ function SettingsPage() {
         </Section>
 
         {/* PRIVACY & SECURITY */}
-        <Section icon={Shield} title="Privacy & security" description="Account access and sign-in.">
+        <Section id="security" icon={Shield} title="Privacy & security" description="Account access and sign-in.">
           <div className="grid sm:grid-cols-3 gap-3 mb-5">
             <MiniStat icon={KeyRound} label="Auth method" value={isGoogle ? "Google" : "Email"} />
             <MiniStat icon={CalendarDays} label="Last login" value={lastSignIn ? lastSignIn.toLocaleDateString() : "—"} />
@@ -456,7 +457,7 @@ function SettingsPage() {
         </Section>
 
         {/* DANGER ZONE */}
-        <Section icon={AlertTriangle} title="Danger zone" description="Irreversible actions. Please proceed with care." tone="danger">
+        <Section id="danger-zone" icon={AlertTriangle} title="Danger zone" description="Irreversible actions. Please proceed with care." tone="danger">
           <div className="space-y-3">
             <div className="rounded-2xl border border-destructive/30 p-4 flex flex-wrap items-center gap-3 justify-between">
               <div className="min-w-0">

@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
+@source "../src";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -164,7 +164,14 @@
     background-attachment: fixed;
     min-height: 100vh;
   }
-  .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+  .font-display { font-family: var(--font-display); letter-spacing: 0; }
+}
+
+.mobile-navigation { bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
+.mobile-more-sheet { max-height: 85dvh; }
+.mobile-more-footer { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 1023px) {
+  main { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
 }
 
 @layer utilities {

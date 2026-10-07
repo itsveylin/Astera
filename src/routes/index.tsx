@@ -54,7 +54,7 @@ function Landing() {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link to="/auth" className="text-sm px-4 py-2 rounded-2xl hover:bg-accent/40 transition">Sign in</Link>
+            <Link to="/auth" search={{ next: undefined }} className="text-sm px-4 py-2 rounded-2xl hover:bg-accent/40 transition">Sign in</Link>
             <Link to="/dashboard" className="text-sm px-4 py-2 rounded-2xl gradient-primary text-primary-foreground shadow-[var(--shadow-soft)]">
               Open app
             </Link>
@@ -80,7 +80,7 @@ function Landing() {
               <Link to="/dashboard" className="group px-6 py-3 rounded-2xl gradient-primary text-primary-foreground font-medium shadow-[var(--shadow-elegant)] flex items-center gap-2">
                 Open the app <ArrowRight className="size-4 transition group-hover:translate-x-1" />
               </Link>
-              <Link to="/auth" className="px-6 py-3 rounded-2xl glass">Create account</Link>
+              <Link to="/auth" search={{ next: undefined }} className="px-6 py-3 rounded-2xl glass">Create account</Link>
             </div>
             <div className="mt-10 flex items-center gap-6 text-xs text-muted-foreground">
               <div className="flex -space-x-2">

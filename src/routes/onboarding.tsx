@@ -29,7 +29,7 @@ function Onboarding() {
   const saveBudget = useSaveBudget();
   const saveGoal = useSaveGoal();
 
-  useEffect(() => { if (!loading && !session) nav({ to: "/auth" }); }, [loading, session, nav]);
+  useEffect(() => { if (!loading && !session) nav({ to: "/auth", search: { next: "/onboarding" } }); }, [loading, session, nav]);
   useEffect(() => { if (profile?.onboarded) nav({ to: "/dashboard" }); }, [profile, nav]);
 
   const [step, setStep] = useState(0);
