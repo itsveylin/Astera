@@ -8,6 +8,7 @@ import { CategoryPie } from "@/components/charts/Charts";
 import { useInvestments, useSaveInvestment, useDeleteInvestment, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, INVESTMENT_TYPES, type Investment } from "@/lib/finance";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_app/investments")({
   head: () => ({ meta: [{ title: "Investments — Astera" }] }),
@@ -94,19 +95,19 @@ function InvestmentsPage() {
               const plp = h.invested > 0 ? ((pl / h.invested) * 100).toFixed(1) : "0.0";
               const up = pl >= 0;
               return (
-                <div key={h.id} className="grid grid-cols-12 items-center gap-2 py-3 text-sm group">
-                  <div className="col-span-5 sm:col-span-4">
-                    <div className="font-medium">{h.name}</div>
+                <div key={h.id} className="grid grid-cols-2 sm:grid-cols-12 items-center gap-3 py-3 text-sm group">
+                  <div className="col-span-2 sm:col-span-3 min-w-0">
+                    <div className="font-medium break-words">{h.name}</div>
                     <div className="text-xs text-muted-foreground">{h.type}</div>
                   </div>
-                  <div className="col-span-3 hidden sm:block text-muted-foreground">{formatMoney(h.invested, currency)}</div>
-                  <div className="col-span-3 tabular-nums">{formatMoney(h.current_value, currency)}</div>
-                  <div className={`col-span-3 sm:col-span-2 text-right tabular-nums flex items-center justify-end gap-1 ${up ? "text-[var(--color-success)]" : "text-destructive"}`}>
+                  <div className="sm:col-span-2 min-w-0 break-words text-muted-foreground"><span className="block sm:hidden text-xs">Invested</span>{formatMoney(h.invested, currency)}</div>
+                  <div className="sm:col-span-3 min-w-0 break-words tabular-nums"><span className="block sm:hidden text-xs text-muted-foreground">Current value</span>{formatMoney(h.current_value, currency)}</div>
+                  <div className={`sm:col-span-2 tabular-nums flex items-center sm:justify-end gap-1 ${up ? "text-success" : "text-destructive"}`}>
                     {up ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}{plp}%
                   </div>
-                  <div className="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition">
-                    <button onClick={() => setEditing(h)} className="p-1 rounded hover:bg-accent/40"><Pencil className="size-3" /></button>
-                    <button onClick={() => { if (confirm("Delete?")) del.mutate(h.id); }} className="p-1 rounded hover:bg-destructive/20 text-destructive"><Trash2 className="size-3" /></button>
+                  <div className="sm:col-span-2 flex justify-end gap-1">
+                    <Button variant="ghost" size="icon" aria-label={`Edit ${h.name}`} title="Edit holding" onClick={() => setEditing(h)} className="size-11"><Pencil /></Button>
+                    <Button variant="ghost" size="icon" aria-label={`Delete ${h.name}`} title="Delete holding" onClick={() => { if (confirm("Delete?")) del.mutate(h.id); }} className="size-11 text-destructive hover:bg-destructive/20"><Trash2 /></Button>
                   </div>
                 </div>
               );

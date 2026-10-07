@@ -35,7 +35,7 @@ export function MobileNav() {
         return (
           <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`min-w-0 min-h-12 flex flex-col justify-center items-center gap-1 py-2 rounded-2xl text-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? "gradient-primary text-primary-foreground" : "text-muted-foreground"}`}>
             <Icon className="size-4" />
-            {"mobileLabel" in item ? item.mobileLabel : item.label}
+            {item.mobileLabel}
           </Link>
         );
       })}

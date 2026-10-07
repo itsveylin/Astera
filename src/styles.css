@@ -172,6 +172,10 @@
 .mobile-more-footer { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 1023px) {
   main { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+  main .group .opacity-0 { opacity: 1; }
+}
+@media (hover: none) {
+  main .group .opacity-0 { opacity: 1; }
 }
 
 @layer utilities {
