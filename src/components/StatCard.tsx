@@ -39,12 +39,12 @@ export function StatCard({
       transition={{ type: "spring", stiffness: 220, damping: 22 }}
       className="glass rounded-3xl p-5 relative overflow-hidden"
     >
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-          <div className="font-display text-3xl mt-2">{display}</div>
+          <div className="font-display text-3xl mt-2 break-words">{display}</div>
         </div>
-        <div className={`size-10 rounded-2xl grid place-items-center ${accentBg}`}>
+        <div className={`size-10 shrink-0 rounded-2xl grid place-items-center ${accentBg}`}>
           <Icon className="size-5" />
         </div>
       </div>

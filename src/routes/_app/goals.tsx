@@ -12,7 +12,14 @@ import { formatMoney, type Goal } from "@/lib/finance";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/goals")({
-  head: () => ({ meta: [{ title: "Goals — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Goals — Astera" },
+    { name: "description", content: "Manage savings goals, contributions, withdrawals, and progress in Astera." },
+    { property: "og:title", content: "Goals — Astera" },
+    { property: "og:description", content: "Manage savings goals, contributions, withdrawals, and progress in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: GoalsPage,
 });
 

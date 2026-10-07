@@ -8,7 +8,14 @@ import { formatMoney } from "@/lib/finance";
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/_app/report")({
-  head: () => ({ meta: [{ title: "Year Report — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Year Report — Astera" },
+    { name: "description", content: "Review your annual income, spending, savings, and category breakdowns in Astera." },
+    { property: "og:title", content: "Year Report — Astera" },
+    { property: "og:description", content: "Review your annual income, spending, savings, and category breakdowns in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Report,
 });
 

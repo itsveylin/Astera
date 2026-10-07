@@ -12,9 +12,17 @@ import {
 import type { ImportedTransaction } from "@/hooks/useImportData";
 import { CATEGORIES, formatMoney, getSubcategories, PAYMENT_METHODS, type Category } from "@/lib/finance";
 import { useProfile } from "@/hooks/useFinanceData";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_app/import")({
-  head: () => ({ meta: [{ title: "Import Transactions — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Import Transactions — Astera" },
+    { name: "description", content: "Review and import bank statement and SMS transactions into Astera." },
+    { property: "og:title", content: "Import Transactions — Astera" },
+    { property: "og:description", content: "Review and import bank statement and SMS transactions into Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ImportPage,
 });
 
@@ -30,16 +38,16 @@ function ImportPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       <Topbar title="Import Transactions" subtitle="Bring in transactions from bank statements or SMS — nothing is saved until you approve it." />
 
-      <div className="glass rounded-3xl p-2 inline-flex gap-1">
+      <div role="tablist" aria-label="Import source" className="glass rounded-3xl p-2 flex flex-wrap gap-1">
         {([
           { k: "upload", label: "Upload Statement", icon: Upload },
           { k: "sms", label: "Paste SMS", icon: MessageSquare },
           { k: "review", label: `Review${pending.length ? ` · ${pending.length}` : ""}`, icon: FileText },
         ] as const).map(({ k, label, icon: Icon }) => (
-          <button key={k} onClick={() => setTab(k)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm ${tab === k ? "gradient-primary text-primary-foreground shadow-[var(--shadow-soft)]" : "text-muted-foreground hover:text-foreground"}`}>
+          <Button variant="ghost" role="tab" aria-selected={tab === k} key={k} onClick={() => setTab(k)}
+            className={`h-auto min-h-11 flex items-center gap-2 px-3 py-2 rounded-2xl text-sm ${tab === k ? "gradient-primary text-primary-foreground shadow-[var(--shadow-soft)]" : "text-muted-foreground hover:text-foreground"}`}>
             <Icon className="size-4" /> {label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -104,9 +112,9 @@ function UploadPanel() {
 
       {preview && (
         <div className="glass rounded-3xl p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">{filename}</div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="font-medium break-all">{filename}</div>
               <div className="text-xs text-muted-foreground">{preview.length} transactions extracted</div>
             </div>
             <div className="flex gap-2">
@@ -126,11 +134,11 @@ function PreviewList({ rows }: { rows: ParsedRow[] }) {
   return (
     <div className="rounded-2xl border border-border/50 divide-y divide-border/50 max-h-[420px] overflow-y-auto">
       {rows.map((r, i) => (
-        <div key={i} className="flex items-center gap-3 px-3 py-2 text-sm">
-          <div className="text-xs text-muted-foreground w-24 shrink-0">{new Date(r.occurred_at).toLocaleDateString()}</div>
-          <div className="flex-1 min-w-0 truncate">{r.description}</div>
-          <div className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">{r.category}</div>
-          <div className={`w-28 text-right tabular-nums shrink-0 ${r.credit ? "text-[var(--color-success)]" : "text-destructive"}`}>
+        <div key={i} className="grid grid-cols-2 sm:flex items-center gap-3 px-3 py-2 text-sm">
+          <div className="text-xs text-muted-foreground sm:w-24 shrink-0">{new Date(r.occurred_at).toLocaleDateString()}</div>
+          <div className="sm:flex-1 min-w-0 truncate">{r.description}</div>
+          <div className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground break-words">{r.category}</div>
+          <div className={`sm:w-28 min-w-0 break-words text-right tabular-nums shrink-0 ${r.credit ? "text-success" : "text-destructive"}`}>
             {r.credit ? `+${r.credit.toFixed(2)}` : `-${(r.debit ?? 0).toFixed(2)}`}
           </div>
         </div>

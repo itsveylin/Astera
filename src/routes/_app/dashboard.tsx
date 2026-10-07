@@ -9,7 +9,14 @@ import { useTransactions, useProfile, useInvestments, useGoals, useCashAdjustmen
 import { categoryMeta, formatMoney, type Category } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Dashboard — Astera" },
+    { name: "description", content: "View your balances, cash in hand, spending, savings, and investments in Astera." },
+    { property: "og:title", content: "Dashboard — Astera" },
+    { property: "og:description", content: "View your balances, cash in hand, spending, savings, and investments in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Dashboard,
 });
 

@@ -15,7 +15,14 @@ import {
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/credit-cards")({
-  head: () => ({ meta: [{ title: "Credit Cards — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Credit Cards — Astera" },
+    { name: "description", content: "Manage credit cards, utilization, due dates, and bill payments in Astera." },
+    { property: "og:title", content: "Credit Cards — Astera" },
+    { property: "og:description", content: "Manage credit cards, utilization, due dates, and bill payments in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: CreditCardsPage,
 });
 

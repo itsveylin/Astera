@@ -18,7 +18,14 @@ import {
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/transactions")({
-  head: () => ({ meta: [{ title: "Transactions — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Transactions — Astera" },
+    { name: "description", content: "Manage transactions, payment methods, categories, and cash adjustments in Astera." },
+    { property: "og:title", content: "Transactions — Astera" },
+    { property: "og:description", content: "Manage transactions, payment methods, categories, and cash adjustments in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: TransactionsPage,
 });
 

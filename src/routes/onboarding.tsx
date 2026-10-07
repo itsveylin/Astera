@@ -9,7 +9,7 @@ import { useProfile, useUpdateProfile, useSaveBudget, useSaveGoal } from "@/hook
 import { CATEGORIES, type Category } from "@/lib/finance";
 
 export const Route = createFileRoute("/onboarding")({
-  head: () => ({ meta: [{ title: "Welcome — Astera" }] }),
+  head: () => ({ meta: [{ title: "Welcome — Astera" }, { name: "description", content: "Set up your income, savings preferences, and budgets in Astera." }, { property: "og:title", content: "Welcome — Astera" }, { property: "og:description", content: "Set up your income, savings preferences, and budgets in Astera." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Onboarding,
 });
 
@@ -29,7 +29,7 @@ function Onboarding() {
   const saveBudget = useSaveBudget();
   const saveGoal = useSaveGoal();
 
-  useEffect(() => { if (!loading && !session) nav({ to: "/auth" }); }, [loading, session, nav]);
+  useEffect(() => { if (!loading && !session) nav({ to: "/auth", search: { next: "/onboarding" } }); }, [loading, session, nav]);
   useEffect(() => { if (profile?.onboarded) nav({ to: "/dashboard" }); }, [profile, nav]);
 
   const [step, setStep] = useState(0);
