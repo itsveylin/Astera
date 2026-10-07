@@ -20,7 +20,14 @@ import { wipeFinancialData, deleteAccount } from "@/lib/account.functions";
 import { formatMoney } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/settings")({
-  head: () => ({ meta: [{ title: "Settings — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Settings — Astera" },
+    { name: "description", content: "Manage your Astera profile, financial preferences, security, exports, and account." },
+    { property: "og:title", content: "Settings — Astera" },
+    { property: "og:description", content: "Manage your Astera profile, financial preferences, security, exports, and account." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SettingsPage,
 });
 

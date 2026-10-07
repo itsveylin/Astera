@@ -11,7 +11,14 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_app/investments")({
-  head: () => ({ meta: [{ title: "Investments — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Investments — Astera" },
+    { name: "description", content: "Track investment holdings, portfolio values, and allocation in Astera." },
+    { property: "og:title", content: "Investments — Astera" },
+    { property: "og:description", content: "Track investment holdings, portfolio values, and allocation in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: InvestmentsPage,
 });
 

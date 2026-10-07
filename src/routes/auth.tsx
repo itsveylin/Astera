@@ -16,7 +16,7 @@ function safePath(value: unknown): string | undefined {
 }
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — Astera" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Astera" }, { name: "description", content: "Sign in or create your Astera personal finance account." }, { property: "og:title", content: "Sign in — Astera" }, { property: "og:description", content: "Sign in or create your Astera personal finance account." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   validateSearch: (s: Record<string, unknown>) => ({
     next: safePath(s.next) ?? safePath(s.redirect),
   }),

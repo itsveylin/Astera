@@ -19,6 +19,8 @@ const formatINR = (n: number) => formatMoney(n, "INR");
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Astera — Your money deserves clarity, not chaos." },
       { name: "description", content: "Astera is an AI-powered personal finance studio. Calm dashboards, smart insights, and effortless control of your money." },
       { property: "og:title", content: "Astera — Personal finance, beautifully clear." },

@@ -16,7 +16,14 @@ import {
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/recurring")({
-  head: () => ({ meta: [{ title: "Recurring — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Recurring — Astera" },
+    { name: "description", content: "Manage scheduled transactions, frequencies, and payment rules in Astera." },
+    { property: "og:title", content: "Recurring — Astera" },
+    { property: "og:description", content: "Manage scheduled transactions, frequencies, and payment rules in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: RecurringPage,
 });
 

@@ -14,7 +14,14 @@ import { CATEGORIES, formatMoney, getSubcategories, PAYMENT_METHODS, type Catego
 import { useProfile } from "@/hooks/useFinanceData";
 
 export const Route = createFileRoute("/_app/import")({
-  head: () => ({ meta: [{ title: "Import Transactions — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Import Transactions — Astera" },
+    { name: "description", content: "Review and import bank statement and SMS transactions into Astera." },
+    { property: "og:title", content: "Import Transactions — Astera" },
+    { property: "og:description", content: "Review and import bank statement and SMS transactions into Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ImportPage,
 });
 

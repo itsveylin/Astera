@@ -6,7 +6,14 @@ import { useTransactions, useProfile } from "@/hooks/useFinanceData";
 import { formatMoney, PAYMENT_METHODS, paymentMethodMeta, type PaymentMethod } from "@/lib/finance";
 
 export const Route = createFileRoute("/_app/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Analytics — Astera" },
+    { name: "description", content: "Explore income, expenses, payment methods, and spending trends in Astera." },
+    { property: "og:title", content: "Analytics — Astera" },
+    { property: "og:description", content: "Explore income, expenses, payment methods, and spending trends in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Analytics,
 });
 

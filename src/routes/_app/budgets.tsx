@@ -9,7 +9,14 @@ import { CATEGORIES, categoryMeta, formatMoney, type Category, type Budget } fro
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export const Route = createFileRoute("/_app/budgets")({
-  head: () => ({ meta: [{ title: "Budgets — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Budgets — Astera" },
+    { name: "description", content: "Manage category budgets and track your monthly spending limits in Astera." },
+    { property: "og:title", content: "Budgets — Astera" },
+    { property: "og:description", content: "Manage category budgets and track your monthly spending limits in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: BudgetsPage,
 });
 

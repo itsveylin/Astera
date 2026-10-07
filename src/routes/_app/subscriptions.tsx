@@ -6,7 +6,14 @@ import { useMemo } from "react";
 import { AlertTriangle, Calendar, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_app/subscriptions")({
-  head: () => ({ meta: [{ title: "Subscriptions — Astera" }] }),
+  head: () => ({ meta: [
+    { title: "Subscriptions — Astera" },
+    { name: "description", content: "Review subscription costs and recurring charges in Astera." },
+    { property: "og:title", content: "Subscriptions — Astera" },
+    { property: "og:description", content: "Review subscription costs and recurring charges in Astera." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Subs,
 });
 
