@@ -151,7 +151,7 @@ Astera is being actively developed as part of my journey in full-stack developme
 
 ## 🔗 Live Demo
 
-(https://bloom-wealth-planner.lovable.app)
+(https://asterafinance.lovable.app/)
 
 ---
 
